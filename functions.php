@@ -13,7 +13,7 @@
 namespace Kadence;
 
 // Includes 
-require get_stylesheet_directory() . '/inc/class-child-theme.php';
+require get_stylesheet_directory() . '/inc/child-functions.php';
 
 // Init
 // Lifted from Kadence parent theme

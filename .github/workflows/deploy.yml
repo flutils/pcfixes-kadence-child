@@ -1,0 +1,54 @@
+#############################
+#############################
+
+## RPECK 13/07/2023
+## This is used to get the FTP credentials from the variables/secrets
+## https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson
+
+#############################
+#############################
+
+## Deploy the sites to the various endpoints
+name: Deploy to stored FTP sites
+
+## On push
+on: push
+
+# Jobs
+jobs:
+
+  ###############
+  # Matrix
+  matrix:
+  
+    # OS
+    runs-on: ubuntu-latest
+
+    # Steps
+    steps:
+
+      - id: set-matrix
+        run: echo "matrix=[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
+
+    # Outputs 
+    outputs: 
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  ###############
+  # FTP
+  deploy:
+
+    # OS
+    runs-on: ubuntu-latest 
+
+    # Needs 
+    needs: matrix 
+
+    # Strategy
+    # This pulls in the value from the initial matrix job
+    strategy:
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+
+    # Steps
+    steps:
+      - run: echo "${{ matrix.project }}"

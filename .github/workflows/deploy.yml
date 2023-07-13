@@ -24,15 +24,15 @@ jobs:
     # OS
     runs-on: ubuntu-latest
 
+    # Outputs 
+    outputs: 
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
     # Steps
     steps:
 
       - id: set-matrix
         run: echo "matrix=[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
-
-    # Outputs 
-    outputs: 
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   ###############
   # FTP
@@ -47,10 +47,11 @@ jobs:
     # Strategy
     # This pulls in the value from the initial matrix job
     strategy:
-      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+      matrix:
+        include: ${{ fromJSON(needs.matrix.outputs.matrix) }}
 
     # Steps
     steps:
       - run: |
           echo "test"
-          echo ${{ matrix.project }};
+          echo ${{ matrix.project }}

@@ -1,0 +1,17 @@
+## Deploy the sites to the various endpoints
+name: Deploy to the different sites
+
+# Jobs
+jobs:
+
+  # Build
+  build:
+  
+    # OS
+    runs-on: ubuntu-latest
+    
+    # Steps
+    steps:
+    
+      # Checkout Repo
+      - uses: actions/checkout@v3

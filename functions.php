@@ -3,10 +3,8 @@
 /////////////////////////////
 /////////////////////////////
 
-/*
-	RPECK 02/07/2023
-	Thematic Framework -- this is an extension to the "Kadence" theme which overrides render hooks and gives us the means to manage templates via the allocation of "sections"
-*/
+// RPECK 02/07/2023
+// Thematic Framework -- this is an extension to the "Kadence" theme which overrides render hooks and gives us the means to manage templates via the allocation of "sections"
 
 /////////////////////////////
 /////////////////////////////

@@ -3,7 +3,7 @@
 # Kadence Child Theme
 ### RPECK 13/07/2023 - Add standardisation to Kadence
 
-Provide the means to customise Kadence in a *standardized* way.
+Provide the means to customise Kadence in a standard way.
 
 There are a number
 

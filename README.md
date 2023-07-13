@@ -5,8 +5,7 @@
 
 Provide the means to customise Kadence in a standard way.
 
-There are a number
-
+Our system takes a number of items 
 
 ---
 

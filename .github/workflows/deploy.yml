@@ -12,7 +12,11 @@
 name: Deploy to stored FTP sites
 
 ## On push
-on: push
+on:
+  push:
+    branches:
+      - 'main'
+      - 'releases/**'
 
 # Jobs
 jobs:

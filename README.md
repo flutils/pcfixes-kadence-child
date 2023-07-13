@@ -1,7 +1,5 @@
 # Kadence Child Theme
-### Interface through which a Kadence-backed Wordpress site can be populated with content, plugins, CPT's, sections and users via a JSON file.
-
-It is designed to help replicate instances of Kadence based websites by using JSON files to populate their content etc. The aim is to make a "framework" which can be adapted to suit different environments.
+### System through which a Kadence-backed Wordpress site can be populated with content, plugins, CPT's, sections and users via a JSON file.
 
 ![PCFixes.com Kadence Child Theme](screenshot.png)
 

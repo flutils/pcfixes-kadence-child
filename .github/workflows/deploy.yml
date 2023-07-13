@@ -51,4 +51,6 @@ jobs:
 
     # Steps
     steps:
-      - run: echo ${{ matrix.project }}
+      - run: |
+        echo "test"
+        echo ${{ matrix.project }}

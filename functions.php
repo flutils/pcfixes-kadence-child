@@ -18,6 +18,7 @@ require get_stylesheet_directory() . '/inc/child-functions.php';
 // Init
 // Lifted from Kadence parent theme
 call_user_func('Kadence\child_init');
+call_user_func('Kadence\child_remove_kadence_notices');
 
 /////////////////////////////
 /////////////////////////////

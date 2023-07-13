@@ -12,7 +12,8 @@
 // Namespace
 namespace Kadence;
 
-// Class Definition
+// Class
+// This is the main class through which we call everything to do with the child theme
 class ChildTheme {
 
     //////////////////////////////
@@ -21,6 +22,36 @@ class ChildTheme {
     // This is the primary ingress point into the system
     // The point is to take the various settings (CPT's etc) and have them loaded here
 
+    // The system can have the following options imported via JSON: -
+    /*
+
+        {
+            "site": {
+                "name":   "X",       @string
+                "logo":   "Y",       @string (represents image URL)
+                "colors": "#ffffff", @string or @array --> array used to define specific colours
+            },
+            "cpts": [
+                {
+                    "single":  "x", @string
+                    "plural":  "y", @string
+                    "slug":    "z", @string
+                    "archive": "a", @boolean
+                    "public":  "b"  @boolean
+                }
+            ],
+            "plugins": [
+                {
+                    "name":      "x", @string
+                    "activated": "y", @boolean
+                    "required":  "z"  @boolean
+                }
+            ]
+
+
+        }
+
+    */
     //////////////////////////////
     //////////////////////////////   
 
@@ -31,15 +62,23 @@ class ChildTheme {
 	// Public function which is invoked by the constructor
 	public function initialize() {
 
-        // Filters
+        // Sections CPT
+        // This is a set of CPT's we use to populate parts of the theme in a systemic way
+        // https://avada.com/documentation/understanding-layouts-and-layout-sections/#:~:text=Structurally%2C%20Avada%20has%20four%20Layout,in%20the%20Header%20Layout%20Section.
         add_filter('manage_section_posts_columns', array($this, 'kadence_child_theme_admin_columns'));
-
-        // Action
         add_action('manage_section_posts_custom_column', array($this, 'kadence_child_theme_admin_custom_columns'), 10, 2); 
+
+        // Other CPT's
+        // These are defined inside our imported JSON file
+        // To be sure not to conflict with ACF, we need to ensure we are 
+        // []
+
+        // Options page & other inputs
+        // This is used to give us the means to
 
 	}
 
-    // Admin Column Labels
+    // Admin Columns
     // For CPT's inside the theme, these are the labels for the columns
     public function kadence_child_theme_admin_columns($columns) {
 

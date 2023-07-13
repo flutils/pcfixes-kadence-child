@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 require get_stylesheet_directory() . '/inc/classes/child-theme.php';
 
 // Init
-// This allows us to get the 
+// This allows us to get the child theme initialized (IE populated with content etc)
 function child_init() {
 
 	// This loads the various classes required to run the theme
@@ -30,4 +30,20 @@ function child_init() {
     // Initialize child theme
     $child_theme->initialize();
 
+}
+
+// RPECK 13/07/2023
+// Remove Kadence notice(s)
+// This was added to ensure were not getting any unwanted messages from Kadence
+function child_remove_kadence_notices(){
+
+    // Remove 'Starter Templates' notice
+    // https://www.kadencewp.com/support-forums/topic/how-to-remove-cart-summary-title/
+    add_action('init', function() {
+        if (class_exists('Kadence\Theme')) {
+            $kadence_theme_class = \Kadence\Theme::instance();
+            remove_action('admin_notices', array( $kadence_theme_class->components['base_support'], 'kadence_starter_templates_notice' ));
+        }
+    });
+    
 }

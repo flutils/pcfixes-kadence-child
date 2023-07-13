@@ -1,4 +1,5 @@
 # Kadence Child Theme
+## Standardized theme to provide an interface through which a Kadence-backed website can be populated with content, CPT's, sections and users via a JSON file
 ![PCFixes.com Kadence Child Theme](screenshot.png)
 ### RPECK 13/07/2023 - Add standardisation to Kadence
 

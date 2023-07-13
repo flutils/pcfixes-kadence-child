@@ -32,7 +32,7 @@ jobs:
     steps:
 
       - id: set-matrix
-        run: echo "matrix=[{\"url\":\"ftp.parishframework3.actondev7.com\",\"user\":\"deploy@parishframework3.actondev7.com\",\"directory\":\"public_html/wp-content/themes\",\"pass\":\"jwrnU-jG5MP\"}]" >> $GITHUB_OUTPUT
+        run: echo "matrix=[{\"host\":\"ftp.parishframework3.actondev7.com\",\"user\":\"deploy@parishframework3.actondev7.com\",\"pass\":\"jwrn)U-jG5MP\",\"directory\":\"./public_html/wp-content/themes/kadence-child-theme/\"}]" >> $GITHUB_OUTPUT
 
   ###############
   # FTP
@@ -51,8 +51,16 @@ jobs:
         include: ${{ fromJSON(needs.matrix.outputs.matrix) }}
 
     # Steps
+    ## Each of these steps are run for the various FTP credentials we have inferred from the matrix variable above
     steps:
-      - run: |
-          echo "test"
-          echo ${{ fromJSON(vars.FTP_CREDENTIALS) }}
-          echo ${{ matrix.project }}
+
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
+      
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server:     ${{ matrix.host }}
+          username:   ${{ matrix.user }}
+          password:   ${{ matrix.pass }}
+          server-dir: ${{ matrix.directory }}

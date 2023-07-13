@@ -54,4 +54,5 @@ jobs:
     steps:
       - run: |
           echo "test"
+          echo ${{ toJSON(vars.FTP_CREDENTIALS) }}
           echo ${{ matrix.project }}

@@ -32,7 +32,7 @@ jobs:
     steps:
 
       - id: set-matrix
-        run: echo "matrix=[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]" >> $GITHUB_OUTPUT
+        run: echo "matrix=[\r\n  {\r\n    \"url\": \"ftp.parishframework3.actondev7.com\",\r\n    \"user\": \"deploy@parishframework3.actondev7.com\",\r\n    \"directory\": \"public_html/wp-content/themes\",\r\n    \"pass\": \"jwrn)U-jG5MP\"\r\n  }\r\n]" >> $GITHUB_OUTPUT
 
   ###############
   # FTP

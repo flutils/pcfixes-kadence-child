@@ -32,7 +32,7 @@ jobs:
     steps:
 
       - id: set-matrix
-        run: echo "matrix=[{\"url\":\"ftp.parishframework3.actondev7.com\",\"user\":\"deploy@parishframework3.actondev7.com\",\"directory\":\"public_html/wp-content/themes\",\"pass\":\"jwrn)U-jG5MP\"}]" >> $GITHUB_OUTPUT
+        run: echo "matrix=[{\"url\":\"ftp.parishframework3.actondev7.com\",\"user\":\"deploy@parishframework3.actondev7.com\",\"directory\":\"public_html/wp-content/themes\",\"pass\":\"jwrnU-jG5MP\"}]" >> $GITHUB_OUTPUT
 
   ###############
   # FTP
@@ -54,5 +54,5 @@ jobs:
     steps:
       - run: |
           echo "test"
-          echo ${{ toJSON(vars.FTP_CREDENTIALS) }}
+          echo ${{ fromJSON(vars.FTP_CREDENTIALS) }}
           echo ${{ matrix.project }}

@@ -1,11 +1,12 @@
-![PCFixes.com Kadence Child Theme](screenshot.png)
-
 # Kadence Child Theme
+![PCFixes.com Kadence Child Theme](screenshot.png)
 ### RPECK 13/07/2023 - Add standardisation to Kadence
 
 Provide the means to customise Kadence in a standard way.
 
-Our system takes a number of items 
+Our system uses a set of functionality to provide a standardised way to populate Kadence based websites.
+
+The aim is to have a JSON payload that can be used to build out most of the website
 
 ---
 

@@ -3,8 +3,8 @@
 //////////////////////////
 //////////////////////////
 
-// RPECK 13/07/2023
-// Child theme class - used to provide base functionality for the child theme
+// RPECK 14/07/2023
+// Child post type class - used to store plugin information for each of the plugins we wish to invoke
 
 //////////////////////////
 //////////////////////////
@@ -14,69 +14,18 @@ namespace Kadence;
 
 // Class
 // This is the main class through which we call everything to do with the child theme
-class ChildTheme {
+class ChildPostType {
 
-    //////////////////////////////
-    //////////////////////////////
-
-    // This is the primary ingress point into the system
-    // The point is to take the various settings (CPT's etc) and have them loaded here
-
-    // The system can have the following options imported via JSON: -
-    /*
-
-        {
-            "site": {
-                "name":   "X",       @string
-                "logo":   "Y",       @string (represents image URL)
-                "colors": "#ffffff", @string or @array --> array used to define specific colours
-            },
-            "cpts": [
-                {
-                    "single":  "x", @string
-                    "plural":  "y", @string
-                    "slug":    "z", @string
-                    "archive": "a", @boolean
-                    "public":  "b"  @boolean
-                }
-            ],
-            "plugins": [
-                {
-                    "name":      "x", @string
-                    "activated": "y", @boolean
-                    "required":  "z"  @boolean
-                }
-            ]
-
-
-        }
-
-    */
-    //////////////////////////////
-    //////////////////////////////   
-
+    // This loads every time a new post type is initialized by our theme
+    // The idea is that we are able to populate our theme settings with a JSON file and have it populate the CPT's we require, rather than having to go through the likes of ACF
+    
     // Constructor
-	function __construct() {}
+	// Used to populate the various elements of the class (plugins, sections, cpt's, etc)
+	function __construct() { }
 
-	// Initialize
-	// Public function which is invoked by the constructor
-	public function initialize() {
+}
 
-        // Sections CPT
-        // This is a set of CPT's we use to populate parts of the theme in a systemic way
-        // https://avada.com/documentation/understanding-layouts-and-layout-sections/#:~:text=Structurally%2C%20Avada%20has%20four%20Layout,in%20the%20Header%20Layout%20Section.
-        add_filter('manage_section_posts_columns', array($this, 'kadence_child_theme_admin_columns'));
-        add_action('manage_section_posts_custom_column', array($this, 'kadence_child_theme_admin_custom_columns'), 10, 2); 
-
-        // Other CPT's
-        // These are defined inside our imported JSON file
-        // To be sure not to conflict with ACF, we need to ensure we are 
-        // []
-
-        // Options page & other inputs
-        // This is used to give us the means to
-
-	}
+/* 
 
     // Admin Columns
     // For CPT's inside the theme, these are the labels for the columns
@@ -109,6 +58,9 @@ class ChildTheme {
                 break;
         }
     }
+
+    */
+
 
 
     /*
@@ -198,5 +150,3 @@ function child_init() {
     });
 
     */
-    
-}

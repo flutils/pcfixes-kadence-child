@@ -4,7 +4,7 @@
 //////////////////////////
 
 // RPECK 02/07/2023
-// Child theme functions - entrypoint into the various aspects of the theme
+// Child theme functions - entrypoint into the various aspects of the child theme
 
 //////////////////////////
 //////////////////////////
@@ -15,14 +15,23 @@ namespace Kadence;
 // No access to this directly
 defined( 'ABSPATH' ) || exit;
 
-// Includes 
+// RPECK 13/07/2023 - Includes 
 // Required files to allow us to run the various classes
-require get_stylesheet_directory() . '/inc/classes/class-child-theme.php';
-require get_stylesheet_directory() . '/inc/classes/class-child-post-types.php';
-require get_stylesheet_directory() . '/inc/classes/class-child-plugins.php';
-require get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activation.php';
+require_once get_stylesheet_directory() . '/inc/classes/class-child-theme.php';
+require_once get_stylesheet_directory() . '/inc/classes/class-child-post-type.php';
+require_once get_stylesheet_directory() . '/inc/classes/class-child-plugin.php';
+require_once get_stylesheet_directory() . '/inc/classes/class-tgmpa.php';
 
-// Init
+// RPECK 15/07/2023 - Redux Framework
+// Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
+// https://devs.redux.io/guides/advanced/embedding-redux.html
+// --
+// We are using Redux to give us a means to manage options without having to write a ton of code to handle it
+// Crucially, it is fully supported by OCDI, allowing us to import customization options as needed without difficulty
+// The Redux-Core file is added to the output build when a new release is created in Github
+if(!class_exists('ReduxFramework') && file_exists(dirname(__FILE__)  . '../vendor/redux-core/framework.php')) require_once(dirname(__FILE__)  . '../vendor/redux-core/framework.php');
+
+// RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)
 function child_init() {
 
@@ -35,8 +44,7 @@ function child_init() {
 
 }
 
-// RPECK 13/07/2023
-// Remove Kadence notice(s)
+// RPECK 13/07/2023 - Remove Kadence notice(s)
 // This was added to ensure were not getting any unwanted messages from Kadence
 function child_remove_kadence_notices(){
 

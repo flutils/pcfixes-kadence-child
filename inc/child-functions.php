@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 require_once get_stylesheet_directory() . '/inc/classes/class-child-theme.php';
 require_once get_stylesheet_directory() . '/inc/classes/class-child-post-type.php';
 require_once get_stylesheet_directory() . '/inc/classes/class-child-plugin.php';
-require_once get_stylesheet_directory() . '/inc/classes/class-tgmpa.php';
+require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activation.php';
 
 // RPECK 15/07/2023 - Redux Framework
 // Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
@@ -28,8 +28,12 @@ require_once get_stylesheet_directory() . '/inc/classes/class-tgmpa.php';
 // --
 // We are using Redux to give us a means to manage options without having to write a ton of code to handle it
 // Crucially, it is fully supported by OCDI, allowing us to import customization options as needed without difficulty
-// The Redux-Core file is added to the output build when a new release is created in Github
+// The Redux-Core file is added to the output build when a new release is created in Github (pulled from the WPPackagist directory)
 if(!class_exists('ReduxFramework') && file_exists(dirname(__FILE__)  . '../vendor/redux-core/framework.php')) require_once(dirname(__FILE__)  . '../vendor/redux-core/framework.php');
+
+// RPECK 16/07/2023 - Redux Config 
+// Used to load the various configuration options for Redux, from which we are able to manage the theme
+if(!isset($redux_demo) && file_exists(dirname( __FILE__ ) . '../lib/redux-config.php')) require_once(dirname( __FILE__ ) . '../lib/redux-config.php');
 
 // RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)
@@ -55,4 +59,17 @@ function child_remove_kadence_notices(){
         remove_action('admin_notices', array( $kadence_theme_class->components['base_support'], 'kadence_starter_templates_notice' ));
     }
     
+}
+
+// RPECK 15/07/2023 - Admin Menu Arrow Thing
+// Taken from the Kadence Starter Themes plugin (./wp-content/plugins/kadence-starter-templates/class-kadence-starter-templates.php)
+function child_basic_css_menu_support() {
+
+	// Check if Kadence exists 
+	if (class_exists('Kadence\Theme')) {
+		wp_register_style('kadence-import-admin', false );
+		wp_enqueue_style('kadence-import-admin' );
+		$css = '#menu-appearance .wp-submenu a[href^="themes.php?page=kadence-"]:before {content: "\21B3";margin-right: 0.5em;opacity: 0.5;}';
+		wp_add_inline_style('kadence-import-admin', $css);
+	}
 }

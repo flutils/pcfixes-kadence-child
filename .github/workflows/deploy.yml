@@ -1,8 +1,8 @@
 #############################
 #############################
 
-## RPECK 13/07/2023
-## This is used to get the FTP credentials from the variables/secrets
+## RPECK 13/07/2023 - Github Action
+## This is used to deploy builds of our child theme (firstly to the added sites and then to Wordpress SVN respository)
 ## https://docs.github.com/en/actions/learn-github-actions/expressions#fromjson
 
 #############################
@@ -22,7 +22,8 @@ on:
 jobs:
 
   ###############
-  # Matrix
+  ## RPECK 16/07/2023 - Matrix of FTP accounts
+  ## This is used to give us the means to collate different endpoints to which we can deploy our theme
   matrix:
   
     # OS
@@ -39,7 +40,8 @@ jobs:
         run: echo "matrix=[{\"host\":\"ftp.parishframework3.actondev7.com\",\"user\":\"deploy@parishframework3.actondev7.com\",\"pass\":\"jwrn)U-jG5MP\",\"directory\":\"./public_html/wp-content/themes/kadence-child-theme/\"}]" >> $GITHUB_OUTPUT
 
   ###############
-  # FTP
+  ## RPECK 16/07/2023 - Deploy
+  ## This is presently limited to the single item  
   deploy:
 
     # OS
@@ -60,6 +62,9 @@ jobs:
 
       - name: 🚚 Get latest code
         uses: actions/checkout@v3
+
+      - name: 🏗️ Build PHP
+        uses: php-actions/composer@v6
       
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4

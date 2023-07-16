@@ -1,9 +1,7 @@
-# 🔥 Kadence Child Theme
-### System through which a Kadence-backed Wordpress site can be populated with content, plugins, CPT's, sections and users via a JSON file.
+# 🔥 Kadence Child Theme (July 2023)
+#### Kadence child theme a Wordpress site can use to populate content, plugins, CPT's, sections and users.
 
-PCFixes' Kadence child theme gives us the ability to define various amounts of content and have them imported into the theme in a systemic way.
-
-The benefit is that it makes the process of deploying Wordpress websites systematic, allowing for various designs/payloads to be distributed throughout a network of sites without having to customise them in intricate ways.
+Uses [OCDI](https://www.ocdi.com), [Redux](https://www.redux.io), [TGMPA](http://tgmpluginactivation.com/) and several others to provide a standardised platform through which Wordpress developers can distribute copies of their Kadence-backed websites.
 
 ![PCFixes.com Kadence Child Theme](screenshot.png)
 

@@ -10,7 +10,7 @@
 //////////////////////////
 
 // Namespace
-namespace Kadence;
+namespace KadenceChild;
 
 // No access to this directly
 defined( 'ABSPATH' ) || exit;
@@ -18,10 +18,9 @@ defined( 'ABSPATH' ) || exit;
 // RPECK 13/07/2023 - Includes 
 // Required files to allow us to run the various classes
 require_once get_stylesheet_directory() . '/inc/classes/class-child-theme.php';			   // RPECK 15/07/2023 - Child base class
-require_once get_stylesheet_directory() . '/inc/classes/class-child-post-type.php';		   // RPECK 15/07/2023 - Child post type class
-require_once get_stylesheet_directory() . '/inc/classes/class-child-plugin.php';		   // RPECK 15/07/2023 - Child plugin class
 require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activation.php';  // RPECK 15/07/2023 - TGMPA class
-require_once get_stylesheet_directory() . '/inc/classes/class-redux.php';                  // RPECK 16/07/2023 - Base Redux class
+require_once get_stylesheet_directory() . '/inc/classes/class-redux.php';       		   // RPECK 16/07/2023 - Base Redux class (used to pull out data)
+require_once get_stylesheet_directory() . '/inc/classes/class-redux-section.php';          // RPECK 16/07/2023 - Section of Redux framework (used to populate each part of Redux page)
 
 // RPECK 15/07/2023 - Redux Framework
 // Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
@@ -34,7 +33,7 @@ if(!class_exists('ReduxFramework') && file_exists(get_stylesheet_directory()  . 
 
 // RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)
-function child_init() {
+function init() {
 
 	// This loads the various classes required to run the theme
 	// The reason why we're using classes is because we want to instantize everything to make things work as systemically as possible
@@ -47,7 +46,7 @@ function child_init() {
 
 // RPECK 13/07/2023 - Remove Kadence notice(s)
 // This was added to ensure were not getting any unwanted messages from Kadence
-function child_remove_kadence_notices(){
+function remove_kadence_notices(){
 
     // Remove 'Starter Templates' notice
     // https://www.kadencewp.com/support-forums/topic/how-to-remove-cart-summary-title/
@@ -60,7 +59,7 @@ function child_remove_kadence_notices(){
 
 // RPECK 15/07/2023 - Admin Menu Arrow Thing
 // Taken from the Kadence Starter Themes plugin (./wp-content/plugins/kadence-starter-templates/class-kadence-starter-templates.php)
-function child_basic_css_menu_support() {
+function basic_css_menu_support() {
 
 	// Check if Kadence exists 
 	if (class_exists('Kadence\Theme')) {

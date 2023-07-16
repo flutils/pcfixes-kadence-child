@@ -11,7 +11,7 @@
 
 // RPECK 13/07/2023 - Namespace
 // This was taken from the primary Kadence system - no need to change it
-namespace Kadence;
+namespace KadenceChild;
 
 // RPECK 16/07/2023 - No direct access
 // Maintain the security of the system by blocking anyone who tries to access the file directly
@@ -24,25 +24,9 @@ class ChildTheme {
     //////////////////////////////
     //////////////////////////////
 
-    // RPECK 14/07/2023
-    // Public plugins endpoint
-    public $plugins;
-
-    // RPECK 14/07/2023
-    // Public post_types endpoint (used for CPT definitions)
-    public $post_types;
-
-    // RPECK 14/07/2023
-    // Public sections endpoint
-    public $sections;
-
 	// RPECK 16/07/2023 - Redux
-	// This allows us to access the settings for Redux etc
+	// This is the main entrypoint for the various settings of a theme (plugins, sections, etc)
 	public $redux;
-
-    // RPECK 14/07/2023
-    // Public settings endpoint
-    protected $settings;
 
 	// RPECK 14/07/2023
 	// Taken from the main Kadence theme
@@ -91,29 +75,11 @@ class ChildTheme {
 
     // RPECK 13/07/2023 - Constructor
 	// Used to populate the various elements of the class (plugins, sections, cpt's, etc)
-	function __construct($settings = array()) {
-
-		// Settings
-		// These are the root configuration options inside the child theme
-		// They allow us to populate the various attributes of the system via a JSON file (or some other data payload)
-        $this->settings = array(
-            'plugins'    => array(),
-            'post_types' => array()
-        );
-
-	}
+	function __construct() {}
 
 	// RPECK 14/07/2023 - Initialize
 	// Public function which is invoked by the constructor
 	public function initialize() {
-
-        // RPECK 14/07/2023 - Plugins
-		// Populates an array of plugins that are pulled from the theme customization options
-		$this->plugins = $this->get('plugins', $this->settings['plugins']);
-
-        // RPECK 14/07/2023 - Post Types
-		// Populates an array of plugins that are pulled from the theme customization options
-		$this->post_types = $this->get('post_types', $this->settings['post_types']);
 
 		// RPECK 16/07/2023 - Redux
 		// This populates the various sections on the site with the Redux theme framework included in functions.php
@@ -127,71 +93,8 @@ class ChildTheme {
 			// This is our own system but allows us to initialize the class whenever we require
             $this->redux->initialize();
 
-			// RPECK 16/07/2023 - New Section
-			// Allows us to set up a new section inside Redux   
-			$this->redux->set_section();         
-			add_filter("redux/options/{$this->redux->opt_name}/sections", function($sections) {
-
-                $sections[] = array(
-                    'title'  => esc_html__( 'Basic Field2', 'your-textdomain-here' ),
-                    'id'     => 'basic',
-                    'desc'   => esc_html__( 'Basic field with no subsections.', 'your-textdomain-here' ),
-                    'icon'   => 'el el-home',
-                    'fields' => array(
-                        array(
-                            'id'       => 'opt-text',
-                            'type'     => 'text',
-                            'title'    => esc_html__( 'Example Text', 'your-textdomain-here' ),
-                            'desc'     => esc_html__( 'Example description.', 'your-textdomain-here' ),
-                            'subtitle' => esc_html__( 'Example subtitle.', 'your-textdomain-here' ),
-                            'hint'     => array(
-                                'content' => 'This is a <b>hint</b> tool-tip for the text field.<br/><br/>Add any HTML based text you like here.',
-                            )
-                        )
-                    )
-                );
-
-                return $sections;
-            }, 10, 1);
-
         }
 
 	}
-
-    ////////////
-    // Public
-
-    ////////////
-    // Private
-
-    // RPECK 14/07/2023 - Get Function
-    // Used to populate the various parts of the class that we require to run the system
-    private function get($type, $payload) {
-
-        // Input variables
-        if(isset($type) && isset($payload)) {
-
-            // Vars
-            $return = array();
-
-            // forEach plugins, create a new class instance
-            forEach($payload as &$item) {
-
-                // Vars
-                $class_name = '\Kadence\Child' . str_replace("_", "", ucwords($type, " /_"));
-                $class_name = rtrim($class_name, 's');
-
-                // Data
-                // This is meant to populate the instance of an object with the various bits of data required to build the functionality
-                $return[] = new $class_name($item);
-
-            }
-
-        // Return
-        return $return;
-        
-        }
-
-    }
     
 }

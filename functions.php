@@ -29,13 +29,21 @@
 /////////////////////////////
 
 // Namespace everything through Kadence, so we have access to all of the parent functionality
-namespace Kadence;
+namespace KadenceChild;
 
 // RPECK 16/07/2023 - Declarations
 // These are called to give us the means to define various parts of the system without having to change code all the time
-define('KADENCE_CHILD_TEXT_DOMAIN', 	 'kadence-child-theme');
-define('KADENCE_CHILD_ADMIN_MENU_LABEL', '🔥 Child Theme');
-define('KADENCE_CHILD_ADMIN_PAGE_TITLE', 'Kadence Child Import Management');
+$constants = array(
+	'KADENCE_CHILD_TEXT_DOMAIN' 	 => 'kadence-child-theme',
+	'KADENCE_CHILD_ADMIN_MENU_LABEL' => '🔥 Child Theme',
+	'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management'
+);
+
+// RPECK 16/07/2023 - Define each constant
+// Loops through above array and allows us to populate constants as required
+foreach($constants as $key => $value) {
+	if(!defined($key)) define($key, $value);
+}
 
 // RPECK 15/07/2023 - Includes 
 // Required files to ensure we are able to run the various pieces of functionality
@@ -43,14 +51,14 @@ require_once get_stylesheet_directory() . '/inc/child-functions.php';
 
 // RPECK 13/07/2023 - Init
 // Lifted from Kadence parent theme
-call_user_func('Kadence\child_init');
+call_user_func('KadenceChild\init');
 
 // RPECK 13/07/2023 - Actions
 // These are used to integrate with global hooks inside the system
 // I would have preferred to have these loaded via the call_user_func file, but they would need to integrate into the hooks instead
-add_action('init', 			 		'Kadence\child_remove_kadence_notices'); # => child-functions.php
-add_action('init',					'Kadence\remove_redux_welcome_page');    # => child-functions.php
-add_action('admin_enqueue_scripts', 'Kadence\child_basic_css_menu_support'); # => child-functions.php
+add_action('init', 			 		'KadenceChild\remove_kadence_notices');     # => child-functions.php
+add_action('init',					'KadenceChild\remove_redux_welcome_page');  # => child-functions.php
+add_action('admin_enqueue_scripts', 'KadenceChild\basic_css_menu_support');     # => child-functions.php
 
 /////////////////////////////
 /////////////////////////////

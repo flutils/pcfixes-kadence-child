@@ -1,5 +1,5 @@
-# 🔥 Kadence Child Theme (July 2023)
-<h4<u>Kadence child theme a Wordpress site can use to populate content, plugins, CPT's, sections and users.</u></h4>
+# 🔥 ![PCFixes.com](https://i.imgur.com/xwejn02.jpg) Kadence Child Theme (July 2023)
+#### Kadence child theme a Wordpress site can use to populate content, plugins, CPT's, sections and users.
 
 Uses [OCDI](https://www.ocdi.com), [Redux](https://www.redux.io), [TGMPA](http://tgmpluginactivation.com/)  and several others to provide a platform Wordpress developers can use to distribute copies of their Kadence-backed websites: -
 

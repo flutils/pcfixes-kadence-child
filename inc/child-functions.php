@@ -3,8 +3,8 @@
 //////////////////////////
 //////////////////////////
 
-// RPECK 02/07/2023
-// Child theme functions - entrypoint into the various aspects of the child theme
+// RPECK 02/07/2023 - Child Theme Functions
+// Entrypoint into the various aspects of the child theme
 
 //////////////////////////
 //////////////////////////
@@ -28,12 +28,12 @@ require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activat
 // --
 // We are using Redux to give us a means to manage options without having to write a ton of code to handle it
 // Crucially, it is fully supported by OCDI, allowing us to import customization options as needed without difficulty
-// The Redux-Core file is added to the output build when a new release is created in Github (pulled from the WPPackagist directory)
-if(!class_exists('ReduxFramework') && file_exists(dirname(__FILE__)  . '../vendor/redux-core/framework.php')) require_once(dirname(__FILE__)  . '../vendor/redux-core/framework.php');
+// The Redux-Core file is added to the output build when a new release is created in Github
+if(!class_exists('ReduxFramework') && file_exists(get_stylesheet_directory()  . '/vendor/redux-core/framework.php')) require_once(get_stylesheet_directory()  . '/vendor/redux-core/framework.php');
 
 // RPECK 16/07/2023 - Redux Config 
 // Used to load the various configuration options for Redux, from which we are able to manage the theme
-if(!isset($redux_demo) && file_exists(dirname( __FILE__ ) . '../lib/redux-config.php')) require_once(dirname( __FILE__ ) . '../lib/redux-config.php');
+if(!isset($redux_demo) && file_exists(dirname( __FILE__ ) . '/redux.php')) require_once(dirname( __FILE__ ) . '/redux.php');
 
 // RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)
@@ -72,4 +72,17 @@ function child_basic_css_menu_support() {
 		$css = '#menu-appearance .wp-submenu a[href^="themes.php?page=kadence-"]:before {content: "\21B3";margin-right: 0.5em;opacity: 0.5;}';
 		wp_add_inline_style('kadence-import-admin', $css);
 	}
+}
+
+// RPECK 16/07/2023 - Remove Redux welcome page
+// Removes the 'Settings -> Redux' page that appears with Redux (./wp-content/themes/pcfixes-kadence-child/vendor/redux-core/inc/welcome/class-redux-welcome.php)
+function remove_redux_welcome_page() {
+
+	// Check if ReduxFramework exists
+	if(class_exists('ReduxFramework')) {
+		$redux_instance = \Redux_Core::instance();
+		remove_action('init', array($redux_instance::$welcome, 'init'), 999);
+	}
+
+
 }

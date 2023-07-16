@@ -63,8 +63,8 @@ jobs:
       - name: 🚚 Get latest code
         uses: actions/checkout@v3
 
-      - name: 🏗️ Build PHP
-        uses: php-actions/composer@v6
+      #- name: 🏗️ Build PHP
+      #  uses: php-actions/composer@v6
       
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4

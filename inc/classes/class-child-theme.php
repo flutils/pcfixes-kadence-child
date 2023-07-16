@@ -20,13 +20,6 @@ class ChildTheme {
     //////////////////////////////
     //////////////////////////////
 
-    /*
-
-        RPECK 15/07/2023 - Introduction
-        This system is designed to provide a means to import different websites based on the framework we've designed around Kadence.
-        
-    */
-
     // RPECK 14/07/2023
     // Public plugins endpoint
     public $plugins;
@@ -114,41 +107,10 @@ class ChildTheme {
 		// Populates an array of plugins that are pulled from the theme customization options
 		$this->post_types = $this->get('post_types', $this->settings['post_types']);
 
-        // RPECK 15/07/2023 - Theme Options Page
-        // This needs to show an options page which will contain the downloadable 'framework' files which we can then import
-        add_action('kadence_theme_admin_menu', array($this, 'create_admin_page'));
-
 	}
 
     ////////////
     // Public
-
-    // RPECK 15/07/2023 - Create Admin Page
-    // The admin page to show different import options
-	public function create_admin_page() {
-
-        // RPECK 15/07/2023 - Add theme page (needs to be inside a hook)
-        // The Kadence theme itself should have the admin styling to include the arrow before the text in the admin menu
-        // The key is that the page slug needs to start with "kadence" to have it
-		add_theme_page(
-			esc_html__( 'Child Theme Import Management', 'kadence-child-theme' ),
-			esc_html__( '🔥 Child Theme', 'kadence-child-theme' ),
-			'switch_themes',
-			'kadence-child-theme',
-			array( $this, 'render_admin_page')
-		);
-
-	}
-
-    // RPECK 15/07/2023 - Render Admin Page
-    // This is used to dispaly the code for the admin page
-	public function render_admin_page() {
-		?>
-		<div class="test">
-			Test
-		</div>
-		<?php
-	}
 
     ////////////
     // Private

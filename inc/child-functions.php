@@ -17,10 +17,11 @@ defined( 'ABSPATH' ) || exit;
 
 // RPECK 13/07/2023 - Includes 
 // Required files to allow us to run the various classes
-require_once get_stylesheet_directory() . '/inc/classes/class-child-theme.php';
-require_once get_stylesheet_directory() . '/inc/classes/class-child-post-type.php';
-require_once get_stylesheet_directory() . '/inc/classes/class-child-plugin.php';
-require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activation.php';
+require_once get_stylesheet_directory() . '/inc/classes/class-child-theme.php';			   // RPECK 15/07/2023 - Child base class
+require_once get_stylesheet_directory() . '/inc/classes/class-child-post-type.php';		   // RPECK 15/07/2023 - Child post type class
+require_once get_stylesheet_directory() . '/inc/classes/class-child-plugin.php';		   // RPECK 15/07/2023 - Child plugin class
+require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activation.php';  // RPECK 15/07/2023 - TGMPA class
+require_once get_stylesheet_directory() . '/inc/classes/class-redux.php';                  // RPECK 16/07/2023 - Base Redux class
 
 // RPECK 15/07/2023 - Redux Framework
 // Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
@@ -30,10 +31,6 @@ require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activat
 // Crucially, it is fully supported by OCDI, allowing us to import customization options as needed without difficulty
 // The Redux-Core file is added to the output build when a new release is created in Github
 if(!class_exists('ReduxFramework') && file_exists(get_stylesheet_directory()  . '/vendor/redux-core/framework.php')) require_once(get_stylesheet_directory()  . '/vendor/redux-core/framework.php');
-
-// RPECK 16/07/2023 - Redux Config 
-// Used to load the various configuration options for Redux, from which we are able to manage the theme
-if(!isset($redux_demo) && file_exists(dirname( __FILE__ ) . '/redux.php')) require_once(dirname( __FILE__ ) . '/redux.php');
 
 // RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)

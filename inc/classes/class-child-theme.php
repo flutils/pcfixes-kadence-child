@@ -13,6 +13,10 @@
 // This was taken from the primary Kadence system - no need to change it
 namespace Kadence;
 
+// RPECK 16/07/2023 - No direct access
+// Maintain the security of the system by blocking anyone who tries to access the file directly
+defined( 'ABSPATH' ) || exit;
+
 // RPECK 12/07/2023 - Class
 // Main class through which we call everything to do with the child theme
 class ChildTheme {
@@ -31,6 +35,10 @@ class ChildTheme {
     // RPECK 14/07/2023
     // Public sections endpoint
     public $sections;
+
+	// RPECK 16/07/2023 - Redux
+	// This allows us to access the settings for Redux etc
+	public $redux;
 
     // RPECK 14/07/2023
     // Public settings endpoint
@@ -106,6 +114,47 @@ class ChildTheme {
         // RPECK 14/07/2023 - Post Types
 		// Populates an array of plugins that are pulled from the theme customization options
 		$this->post_types = $this->get('post_types', $this->settings['post_types']);
+
+		// RPECK 16/07/2023 - Redux
+		// This populates the various sections on the site with the Redux theme framework included in functions.php
+		if(class_exists('Redux')) {
+            
+			// RPECK 16/07/2023 - New Redux
+			// Set up new Redux instance (accepts arguments passed as array)
+            $this->redux = new Redux();
+
+			// RPECK 16/07/2023 - Initialize
+			// This is our own system but allows us to initialize the class whenever we require
+            $this->redux->initialize();
+
+			// RPECK 16/07/2023 - New Section
+			// Allows us to set up a new section inside Redux   
+			$this->redux->set_section();         
+			add_filter("redux/options/{$this->redux->opt_name}/sections", function($sections) {
+
+                $sections[] = array(
+                    'title'  => esc_html__( 'Basic Field2', 'your-textdomain-here' ),
+                    'id'     => 'basic',
+                    'desc'   => esc_html__( 'Basic field with no subsections.', 'your-textdomain-here' ),
+                    'icon'   => 'el el-home',
+                    'fields' => array(
+                        array(
+                            'id'       => 'opt-text',
+                            'type'     => 'text',
+                            'title'    => esc_html__( 'Example Text', 'your-textdomain-here' ),
+                            'desc'     => esc_html__( 'Example description.', 'your-textdomain-here' ),
+                            'subtitle' => esc_html__( 'Example subtitle.', 'your-textdomain-here' ),
+                            'hint'     => array(
+                                'content' => 'This is a <b>hint</b> tool-tip for the text field.<br/><br/>Add any HTML based text you like here.',
+                            )
+                        )
+                    )
+                );
+
+                return $sections;
+            }, 10, 1);
+
+        }
 
 	}
 

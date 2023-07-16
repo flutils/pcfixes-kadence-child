@@ -6,7 +6,7 @@
 // RPECK 02/07/2023 - Thematic Framework
 // Extension to the "Kadence" theme which overrides render hooks and gives us the means to manage templates via the allocation of "sections"
 
-/* NOTES */
+/* -- NOTES -- */
 
 // RPECK 16/07/2023 - Folder Name
 // The original folder name was meant to be "kadence-child-theme"
@@ -15,6 +15,15 @@
 // The problem was that file class-redux-functions-ex.php line 393 was testing whether the directory structure of a file was present in a theme
 // If the theme *started* with the folder structure of the file (IE /kadence), then it would return true
 // This meant that we were getting conflicting values and a lot of errors (it was essentially trying to load the files from Kadence's theme directory, not the child)
+
+/* -- */
+
+// RPECK 16/07/2023 - Redux Embed
+// Current redux is embedded in the /vendor folder (redux-core)
+// Having thought about it, this should be the correct pattern as it means that the version of redux that ships with the theme is static
+// Of course, it's preferrable to update it, but that can be done with new theme releases
+// --
+// https://devs.redux.io/guides/advanced/embedding-redux.html
 
 /////////////////////////////
 /////////////////////////////

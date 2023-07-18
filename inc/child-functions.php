@@ -3,8 +3,8 @@
 //////////////////////////
 //////////////////////////
 
-// RPECK 02/07/2023 - Child Theme Functions
-// Entrypoint into the various aspects of the child theme
+// RPECK 02/07/2023 - Child Theme Global Functions
+// Global endpoints which allow us to interface with the theme without having to access classes etc
 
 //////////////////////////
 //////////////////////////
@@ -14,22 +14,6 @@ namespace KadenceChild;
 
 // No access to this directly
 defined( 'ABSPATH' ) || exit;
-
-// RPECK 13/07/2023 - Includes 
-// Required files to allow us to run the various classes
-$files = array(
-	'/inc/classes/class-child-theme.php', 		// RPECK 15/07/2023 - Child base class
-	'/inc/classes/class-redux.php',				// RPECK 16/07/2023 - Base Redux class (used to pull out data)
-	'/inc/classes/class-redux-section.php',		// RPECK 16/07/2023 - Section of Redux framework (used to populate each part of Redux page)
-	'/inc/classes/class-tgmpa.php',				// RPECK 18/07/2023 - Base TGMPA class (pulls in plugins defined inside Redux)
-	'/inc/classes/class-tgmpa-plugin.php'		// RPECK 18/07/2023 - TGMPA plugin class (gives us a standard set of attributes for plugins loaded into tgmpa)
-);
-
-// RPECK 17/07/2023 - Includes
-// Allows us to populate the include files without having to repeat ourselves constantly
-foreach($files as &$file) {
-	require_once get_stylesheet_directory() . $file;
-}     
 
 // RPECK 15/07/2023 - Redux Framework
 // Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
@@ -49,6 +33,9 @@ if(!class_exists('ReduxFramework') && file_exists(get_stylesheet_directory()  . 
 // Whilst the system is not absolutely necessary, it's a good way to ensure continuity through the framework
 if(!class_exists('TGM_Plugin_Activation') && file_exists(get_stylesheet_directory()  . '/vendor/tgm-plugin-activation/class-tgm-plugin-activation.php')) require_once(get_stylesheet_directory()  . '/vendor/tgm-plugin-activation/class-tgm-plugin-activation.php');
 
+//////////////////////////
+//////////////////////////
+
 // RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)
 function init() {
@@ -64,11 +51,6 @@ function init() {
 
 //////////////////////////
 //////////////////////////
-
-/*
-	'Global' Functions
-	These are called by the initial functions.php file for the child theme (primarily so they can be disabled as they aren't buried in a class)
-*/
 
 // RPECK 13/07/2023 - Remove Kadence notice(s)
 // This was added to ensure were not getting any unwanted messages from Kadence

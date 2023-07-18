@@ -43,7 +43,7 @@ defined( 'ABSPATH' ) || exit;
 
 // RPECK 18/07/2023 - TGMPA Class
 // This is used to interface with the TGM-Plugin-Activation class stored in ./vendor/tgm-plugin-activation
-class TGMPACore {
+class TgmpaCore {
 
 	// RPECK 18/07/2023 - Plugins
 	// Array used to define the various plugin options that TGMPA has to manage
@@ -178,7 +178,7 @@ class TGMPACore {
 
 				// RPECK 18/07/2023 - Add a new TGMAPlugin class
 				// This allows us to populate the plugins attribute of the TGMA class
-				$this->plugins[] = new TGMAPlugin($plugin);
+				$this->plugins[] = new TgmpaPlugin($plugin);
 
 			}
 
@@ -186,15 +186,15 @@ class TGMPACore {
         
     }
 
-    // RPECK 18/07/2023 - Initialize
-    // Custom function used to invoke the class when required
-    public function initialize() {
+	// RPECK 18/07/2023 - Initialize
+	// Custom function used to invoke the class when required
+	public function initialize() {
 
-        // RPECK 18/07/2023 - TGMPA require
-        // This invokes the TGMPA class and allows us to populate it with the data we've defined elsewhere in the system
+		// RPECK 18/07/2023 - TGMPA require
+		// This invokes the TGMPA class and allows us to populate it with the data we've defined elsewhere in the system
 		add_filter('tgmpa_register', array($this, 'tgmpa_register_plugins'));
 
-    }
+	}
 
 	// RPECK 18/07/2023 - TGMPA Register Plugins
 	// This is used to populate the various values that TGMPA requires to function

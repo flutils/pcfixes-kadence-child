@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 
 // RPECK 16/07/2023 - Class
 // Class through which Redux Framework configured and initialized
-class Redux {
+class ReduxCore {
 
     // RPECK 16/07/2023 - Opt Name
     // This is used to define the namespace of the values (defaults to KADENCE_CHILD_TEXT_DOMAIN)

@@ -40,31 +40,10 @@
 // Namespace everything through Kadence, so we have access to all of the parent functionality
 namespace KadenceChild;
 
-// RPECK 16/07/2023 - Declarations
-// These are called to give us the means to define various parts of the system without having to change code all the time
-$constants = array(
-    
-	'KADENCE_CHILD_TEXT_DOMAIN' 	 => 'kadence-child-theme',
-
-	'KADENCE_CHILD_ADMIN_MENU_LABEL' => '🔥 Child Theme',
-	'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management',
-
-	'KADENCE_CHILD_TGMPA_MENU_TITLE' => '➡️ Plugins',
-	'KADENCE_CHILD_TGMPA_PAGE_TITLE' => 'Install Required Plugins',
-
-	'KADENCE_CHILD_REDUX_SECTIONS'	 => array('site', 'plugins', 'post_types')
-
-);
-
-// RPECK 16/07/2023 - Define each constant
-// Loops through above array and allows us to populate constants as required
-foreach($constants as $key => $value) {
-	if(!defined($key)) define($key, $value);
-}
-
 // RPECK 15/07/2023 - Includes 
 // Required files to ensure we are able to run the various pieces of functionality
-require_once get_stylesheet_directory() . '/inc/child-functions.php';
+require_once get_stylesheet_directory() . '/inc/autoload.php';          // RPECK 18/07/2023 - autoload classes 
+require_once get_stylesheet_directory() . '/inc/child-functions.php';   // RPECK 18/07/2023 - global functions etc
 
 // RPECK 13/07/2023 - Init
 // Lifted from Kadence parent theme

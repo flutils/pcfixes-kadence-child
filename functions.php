@@ -25,6 +25,15 @@
 // --
 // https://devs.redux.io/guides/advanced/embedding-redux.html
 
+/* -- */
+
+// RPECK 18/07/2023 - Extensibility
+// The point of this child theme is to provide a framework through which *types* of site can be added
+// --
+// If you want to customize any part of this process, it should look to use the various hooks available through this theme and Kadence
+// Ideally, you would NOT touch any of the code inside this child theme and, instead, should add various options to Redux through hooks
+// This not only ensures the veracity of our code but - crucially - means we can continue to develop the child theme without running into major problems
+
 /////////////////////////////
 /////////////////////////////
 
@@ -34,9 +43,17 @@ namespace KadenceChild;
 // RPECK 16/07/2023 - Declarations
 // These are called to give us the means to define various parts of the system without having to change code all the time
 $constants = array(
+    
 	'KADENCE_CHILD_TEXT_DOMAIN' 	 => 'kadence-child-theme',
+
 	'KADENCE_CHILD_ADMIN_MENU_LABEL' => '🔥 Child Theme',
-	'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management'
+	'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management',
+
+	'KADENCE_CHILD_TGMPA_MENU_TITLE' => '➡️ Plugins',
+	'KADENCE_CHILD_TGMPA_PAGE_TITLE' => 'Install Required Plugins',
+
+	'KADENCE_CHILD_REDUX_SECTIONS'	 => array('site', 'plugins', 'post_types')
+
 );
 
 // RPECK 16/07/2023 - Define each constant
@@ -56,9 +73,10 @@ call_user_func('KadenceChild\init');
 // RPECK 13/07/2023 - Actions
 // These are used to integrate with global hooks inside the system
 // I would have preferred to have these loaded via the call_user_func file, but they would need to integrate into the hooks instead
-add_action('init', 			 		'KadenceChild\remove_kadence_notices');     # => child-functions.php
-add_action('init',					'KadenceChild\remove_redux_welcome_page');  # => child-functions.php
-add_action('admin_enqueue_scripts', 'KadenceChild\basic_css_menu_support');     # => child-functions.php
+add_action('init', 			 		 'KadenceChild\remove_kadence_notices');     # => child-functions.php
+add_action('init',					 'KadenceChild\remove_redux_welcome_page');  # => child-functions.php
+add_action('admin_enqueue_scripts',  'KadenceChild\basic_css_menu_support');     # => child-functions.php
+add_action('acf/settings/load_json', 'KadenceChild\acf_json_load_point');		 # => child-functions.php
 
 /////////////////////////////
 /////////////////////////////

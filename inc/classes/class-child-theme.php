@@ -28,6 +28,10 @@ class ChildTheme {
 	// This is the main entrypoint for the various settings of a theme (plugins, sections, etc)
 	public $redux;
 
+    // RPECK 18/07/2023 - TGMPA
+    // Entrypoint for any of the TGMPACore class - which allows us to define different plugins to be installed for the theme (handled by Redux)
+    public $tgmpa;
+
 	// RPECK 14/07/2023
 	// Taken from the main Kadence theme
 	private static $instance = null;
@@ -95,6 +99,20 @@ class ChildTheme {
 
         }
 
+		// RPECK 18/07/2023 - TGMPA Core
+		// Populates the core TGMPACore class, which is required to give us the means to add different plugins
+		if(class_exists('TGMACore')) {
+            
+			// RPECK 18/07/2023 - Set up the new TGMPACore class
+            // This gives us the means to instantiate everything
+            $this->redux = new TGMACore($this->redux->get('plugins'));
+
+			// RPECK 16/07/2023 - Initialize
+			// This is our own system but allows us to initialize the class whenever we require
+            $this->tgmpa->initialize();
+
+        }
+        
 	}
     
 }

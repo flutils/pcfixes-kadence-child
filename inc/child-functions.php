@@ -17,10 +17,19 @@ defined( 'ABSPATH' ) || exit;
 
 // RPECK 13/07/2023 - Includes 
 // Required files to allow us to run the various classes
-require_once get_stylesheet_directory() . '/inc/classes/class-child-theme.php';			   // RPECK 15/07/2023 - Child base class
-require_once get_stylesheet_directory() . '/inc/classes/class-tgm-plugin-activation.php';  // RPECK 15/07/2023 - TGMPA class
-require_once get_stylesheet_directory() . '/inc/classes/class-redux.php';       		   // RPECK 16/07/2023 - Base Redux class (used to pull out data)
-require_once get_stylesheet_directory() . '/inc/classes/class-redux-section.php';          // RPECK 16/07/2023 - Section of Redux framework (used to populate each part of Redux page)
+$files = array(
+	'/inc/classes/class-child-theme.php', 		// RPECK 15/07/2023 - Child base class
+	'/inc/classes/class-redux.php',				// RPECK 16/07/2023 - Base Redux class (used to pull out data)
+	'/inc/classes/class-redux-section.php',		// RPECK 16/07/2023 - Section of Redux framework (used to populate each part of Redux page)
+	'/inc/classes/class-tgmpa.php',				// RPECK 18/07/2023 - Base TGMPA class (pulls in plugins defined inside Redux)
+	'/inc/classes/class-tgmpa-plugin.php'		// RPECK 18/07/2023 - TGMPA plugin class (gives us a standard set of attributes for plugins loaded into tgmpa)
+);
+
+// RPECK 17/07/2023 - Includes
+// Allows us to populate the include files without having to repeat ourselves constantly
+foreach($files as &$file) {
+	require_once get_stylesheet_directory() . $file;
+}     
 
 // RPECK 15/07/2023 - Redux Framework
 // Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
@@ -31,18 +40,35 @@ require_once get_stylesheet_directory() . '/inc/classes/class-redux-section.php'
 // The Redux-Core file is added to the output build when a new release is created in Github
 if(!class_exists('ReduxFramework') && file_exists(get_stylesheet_directory()  . '/vendor/redux-core/framework.php')) require_once(get_stylesheet_directory()  . '/vendor/redux-core/framework.php');
 
+// RPECK 18/07/2023 - TGMPA
+// Imports the core TGMPA class from the vendor directory
+// http://tgmpluginactivation.com/configuration/
+// --
+// We are using TGMPA as a means to validate the plugins added through OCDI
+// This means that if you import a template through OCDI, and there are certain plugins that it has installed but you disabled, it will remind you to install them
+// Whilst the system is not absolutely necessary, it's a good way to ensure continuity through the framework
+if(!class_exists('TGM_Plugin_Activation') && file_exists(get_stylesheet_directory()  . '/vendor/tgm-plugin-activation/class-tgm-plugin-activation.php')) require_once(get_stylesheet_directory()  . '/vendor/tgm-plugin-activation/class-tgm-plugin-activation.php');
+
 // RPECK 13/07/2023 - Init
 // This allows us to get the child theme initialized (IE populated with content etc)
 function init() {
 
 	// This loads the various classes required to run the theme
 	// The reason why we're using classes is because we want to instantize everything to make things work as systemically as possible
-	$child_theme = new ChildTheme;
+	$child_theme = new ChildTheme();
 
     // Initialize child theme
     $child_theme->initialize();
 
 }
+
+//////////////////////////
+//////////////////////////
+
+/*
+	'Global' Functions
+	These are called by the initial functions.php file for the child theme (primarily so they can be disabled as they aren't buried in a class)
+*/
 
 // RPECK 13/07/2023 - Remove Kadence notice(s)
 // This was added to ensure were not getting any unwanted messages from Kadence
@@ -80,5 +106,25 @@ function remove_redux_welcome_page() {
 		remove_action('init', array($redux_instance::$welcome, 'init'), 999);
 	}
 
-
 }
+
+// RPECK 18/07/2023 - ACF JSON
+// The ACF JSON local directory location (./lib/acf-json)
+// https://www.advancedcustomfields.com/resources/local-json/
+// --
+// This ensures we have a place to allocate 
+function acf_json_load_point($paths) {
+    
+    // Remove original path (optional)
+    unset($paths[0]);
+    
+    // Append path
+    $paths[] = get_stylesheet_directory() . '/lib/acf-json';
+    
+    // Return
+    return $paths;
+    
+}
+
+//////////////////////////
+//////////////////////////

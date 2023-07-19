@@ -3,12 +3,6 @@
 //////////////////////////
 //////////////////////////
 
-// RPECK 02/07/2023 - Child Theme Global Functions
-// Global endpoints which allow us to interface with the theme without having to access classes etc
-
-//////////////////////////
-//////////////////////////
-
 // Namespace
 namespace KadenceChild;
 
@@ -18,19 +12,11 @@ defined( 'ABSPATH' ) || exit;
 // RPECK 15/07/2023 - Redux Framework
 // Integrates the core 'redux-core' class from Redux, allowing us to add, manage, import & export options
 // https://devs.redux.io/guides/advanced/embedding-redux.html
-// --
-// We are using Redux to give us a means to manage options without having to write a ton of code to handle it
-// Crucially, it is fully supported by OCDI, allowing us to import customization options as needed without difficulty
-// The Redux-Core file is added to the output build when a new release is created in Github
 if(!class_exists('ReduxFramework') && file_exists(get_stylesheet_directory()  . '/vendor/redux-core/framework.php')) require_once(get_stylesheet_directory()  . '/vendor/redux-core/framework.php');
 
 // RPECK 18/07/2023 - TGMPA
 // Imports the core TGMPA class from the vendor directory
 // http://tgmpluginactivation.com/configuration/
-// --
-// We are using TGMPA as a means to validate the plugins added through OCDI
-// This means that if you import a template through OCDI, and there are certain plugins that it has installed but you disabled, it will remind you to install them
-// Whilst the system is not absolutely necessary, it's a good way to ensure continuity through the framework
 if(!class_exists('TGM_Plugin_Activation') && file_exists(get_stylesheet_directory()  . '/vendor/tgm-plugin-activation/class-tgm-plugin-activation.php')) require_once(get_stylesheet_directory()  . '/vendor/tgm-plugin-activation/class-tgm-plugin-activation.php');
 
 //////////////////////////
@@ -40,12 +26,47 @@ if(!class_exists('TGM_Plugin_Activation') && file_exists(get_stylesheet_director
 // This allows us to get the child theme initialized (IE populated with content etc)
 function init() {
 
+	// RPECK 19/07/2023 - Config
+	// Filter that allows us to define the config options that the class requires
+	add_filter('KadenceChild\config', 'KadenceChild\set_config_defaults');
+
+	// RPECK 13/07/2023 - ChildTheme
 	// This loads the various classes required to run the theme
 	// The reason why we're using classes is because we want to instantize everything to make things work as systemically as possible
-	$child_theme = new ChildTheme();
+	$child_theme = new ChildTheme;
 
-    // Initialize child theme
+	// RPECK 19/07/2023 - Initialize Child Theme
+    // This needs to be added through the Wordpress system so that we can use filters etc
     $child_theme->initialize();
+
+}
+
+//////////////////////////
+//////////////////////////
+
+// RPECK 19/07/2023 - Config Default
+// This is loaded via the functions.php file and is used to provide a means to filter the configuration options for the theme
+function set_config_defaults($config) {
+
+	// RPECK 19/07/2023 - Provide array to the filter
+	// This may change in structure but the following should suffice for now
+	$defaults = array(
+			
+		'KADENCE_CHILD_TEXT_DOMAIN' 	 => KADENCE_CHILD_TEXT_DOMAIN,
+
+		'KADENCE_CHILD_ADMIN_MENU_LABEL' => '🔥 Child Theme',
+		'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management',
+
+		'KADENCE_CHILD_TGMPA_MENU_TITLE' => '➡️ Plugins',
+		'KADENCE_CHILD_TGMPA_PAGE_TITLE' => 'Install Required Plugins',
+
+		'KADENCE_CHILD_REDUX_SECTIONS'	 => array('site', 'plugins', 'post_types')
+
+	);
+
+	// RPECK 19/07/2023 - Return
+	// Return the value of the filter
+	return array_merge($defaults, $config);
 
 }
 

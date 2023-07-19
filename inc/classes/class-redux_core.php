@@ -31,7 +31,7 @@ class ReduxCore {
     public $theme = null;
 
     // RPECK 16/07/2023 - Args
-    // These are used to populate the various arguments for Redux
+    // Used to populate the various arguments for Redux
     public $args = array();
 
     // RPECK 16/07/2023 - Sections
@@ -50,23 +50,21 @@ class ReduxCore {
 		// Allows us to set the various arguments for Redux against a set of defaults
         $this->args = array_merge(
 			array(
-
 				'display_name'     => $this->theme->get('Name'),
 				'display_version'  => $this->theme->get('Version'),
 
-				'footer_credit'    => ' ',
+                'footer_credit'    => ' ',
 
-				'menu_title'       => esc_html__(KADENCE_CHILD_ADMIN_MENU_LABEL, KADENCE_CHILD_TEXT_DOMAIN),
-				'menu_type'        => 'submenu',
+                'menu_title'       => esc_html__('KADENCE_CHILD_ADMIN_MENU_LABEL', KADENCE_CHILD_TEXT_DOMAIN),
+                'menu_type'        => 'submenu',
 
-				'page_slug'		   => KADENCE_CHILD_TEXT_DOMAIN,
-				'page_title'       => esc_html__(KADENCE_CHILD_ADMIN_PAGE_TITLE, KADENCE_CHILD_TEXT_DOMAIN),
-				'page_parent'      => 'themes.php',
+                'page_slug'		   => KADENCE_CHILD_TEXT_DOMAIN,
+                'page_title'       => esc_html__('KADENCE_CHILD_ADMIN_PAGE_TITLE', KADENCE_CHILD_TEXT_DOMAIN),
+                'page_parent'      => 'themes.php',
 
-				'admin_bar'        => false,
-				'customizer'       => false,
-				'dev_mode'         => WP_DEBUG ?? false,
-
+                'admin_bar'        => false,
+                'customizer'       => false,
+                'dev_mode'         => WP_DEBUG ?? false,
 			),
             $args
 		);
@@ -81,6 +79,18 @@ class ReduxCore {
         // Set the above arguments as the default for the system
         \Redux::set_args($this->opt_name, $this->args);
 
+        \Redux::set_section(
+            $this->opt_name,
+            array(
+                'title'            => esc_html__( 'Basic Fields', 'your-textdomain-here' ),
+                'id'               => 'basic',
+                'desc'             => esc_html__( 'These are really basic fields!', 'your-textdomain-here' ),
+                'customizer_width' => '400px',
+                'icon'             => 'el el-home',
+            )
+        );
+
+
     }
 
 	// RPECK 16/07/2023 - Get Args
@@ -90,11 +100,7 @@ class ReduxCore {
 
 		// RPECK 16/07/2023 - Check if arg is present
 		// If $arg is present, use get_arg else use get_args
-		if(is_null($arg)) {
-			\Redux::get_args(KADENCE_CHILD_TEXT_DOMAIN);
-		} else {
-			\Redux::get_arg(KADENCE_CHILD_TEXT_DOMAIN, $arg);
-		}
+		\Redux::get_option(KADENCE_CHILD_TEXT_DOMAIN, $arg);
 
 	}
 

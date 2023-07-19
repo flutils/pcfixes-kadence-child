@@ -30,27 +30,11 @@ class ChildTheme {
 
     // RPECK 18/07/2023 - TGMPA
     // Entrypoint for any of the TGMPACore class - which allows us to define different plugins to be installed for the theme (handled by Redux)
-	// --
-	// We had to call it TGMPACore because 'tgmpa' is a function used by the TGMPA main class. The two were conflicting
     public $tgmpa;
 
     // RPECK 18/07/2023 - Config Options
     // This is used to give us the means to populate a set of configuration options for the class
-    public $config = array(
-        'text' => array(
-                
-                'KADENCE_CHILD_TEXT_DOMAIN' 	 => 'kadence-child-theme',
-
-                'KADENCE_CHILD_ADMIN_MENU_LABEL' => '🔥 Child Theme',
-                'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management',
-
-                'KADENCE_CHILD_TGMPA_MENU_TITLE' => '➡️ Plugins',
-                'KADENCE_CHILD_TGMPA_PAGE_TITLE' => 'Install Required Plugins',
-
-                'KADENCE_CHILD_REDUX_SECTIONS'	 => array('site', 'plugins', 'post_types')
-
-        )
-    );
+    public $config = array();
 
 	// RPECK 14/07/2023
 	// Taken from the main Kadence theme
@@ -101,35 +85,25 @@ class ChildTheme {
 	// Used to populate the various elements of the class (plugins, sections, cpt's, etc)
 	function __construct($config = array()) {
 
-        // RPECK 18/07/2023 - Config Options
-        // Check to ensure any config options are present and then merge them with the current
-        if(!is_null($config) && is_array($config)) array_merge($this->config, $config);
-
-        foreach($this->config['text'] as $key => $value) {
-            define($key, $value);
-        }
-
-    }
-
-	// RPECK 14/07/2023 - Initialize
-	// Public function which is invoked by the constructor
-	public function initialize() {
-
+		// RPECK 19/07/2023 - Default config values
+		// Populated from child-functions.php
+		$this->config = apply_filters('KadenceChild\config', $config);
+		
 		// RPECK 16/07/2023 - Redux
 		// This populates the various sections on the site with the Redux theme framework included in functions.php
 		if(class_exists('\KadenceChild\ReduxCore')) {
             
-			// RPECK 16/07/2023 - New Redux
+			// RPECK 16/07/2023 - Redux
 			// Set up new Redux instance (accepts arguments passed as array)
             $this->redux = new \KadenceChild\ReduxCore();
 
 			// RPECK 16/07/2023 - Initialize
 			// This is our own system but allows us to initialize the class whenever we require
-            $this->redux->initialize();
+            add_action('KadenceChild\redux_initialize', array($this->redux, 'initialize'));
 
         }
 
-		// RPECK 18/07/2023 - TGMPA Core
+		// RPECK 18/07/2023 - TGMPA
 		// Populates the core TGMPACore class, which is required to give us the means to add different plugins
         // -- 
         // We can make this ignore autoload by adding 'false' as a second argument in the class_exists function: -
@@ -138,14 +112,28 @@ class ChildTheme {
             
 			// RPECK 18/07/2023 - Set up the new TGMPACore class
             // This gives us the means to instantiate everything
-            $this->tgmpa = new \KadenceChild\TGMPACore($this->redux->get('plugins'));
+            $this->tgmpa = new \KadenceChild\TgmpaCore($this->redux->get('plugins'));
 
 			// RPECK 16/07/2023 - Initialize
 			// This is our own system but allows us to initialize the class whenever we require
-            $this->tgmpa->initialize();
+            add_action('KadenceChild\tgmpa_initialize', array($this->tgmpa, 'initialize'));
 
         }
-        
+
+    }
+
+	// RPECK 14/07/2023 - Initialize
+	// Public function which is invoked by the constructor
+	public function initialize() {
+
+		// RPECK 19/07/2023 - Load Redux
+		// This uses the actions hook of Wordpress because we want to be able to remove the actions if needed
+        do_action('KadenceChild\redux_initialize');
+
+		// RPECK 19/07/2023 - Load TGMPA
+		// This loads TGMPA, which allows us to show any plugins that need to be installed
+        do_action('KadenceChild\tgmpa_initialize');
+
 	}
     
 }

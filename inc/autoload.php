@@ -4,7 +4,7 @@
 //////////////////////////
 
 // RPECK 18/07/2023 - Autoloader
-// Loads the various classes we use within the theme
+// Loads our own classes within the theme (does not include vendor classes)
 
 //////////////////////////
 //////////////////////////

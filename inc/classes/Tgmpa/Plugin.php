@@ -11,7 +11,7 @@
 
 // RPECK 13/07/2023 - Namespace
 // This was taken from the primary Kadence system - no need to change it
-namespace KadenceChild;
+namespace KadenceChild\Tgmpa;
 
 // RPECK 16/07/2023 - No direct access
 // Maintain the security of the system by blocking anyone who tries to access the file directly
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 
 // RPECK 18/07/2023 - TGMPA Plugin Class
 // Used to give us a set of standard options for each plugin added to TGMPA
-class TGMPAPlugin {
+class Plugin {
 
     // RPECK 18/07/2023 - Name 
     // (Required) The plugin name
@@ -30,7 +30,7 @@ class TGMPAPlugin {
     public $slug;    
 
     // RPECK 18/07/2023 - Source
-    // (Optional) // The plugin source
+    // (Optional) // The plugin source (IE external or internal)
     public $source; 
 
     // RPECK 18/07/2023 - Required
@@ -62,35 +62,15 @@ class TGMPAPlugin {
     function __construct($plugin = array()) {
 
 		// RPECK 18/07/2023 - Plugin
-		// This expects a plugin variable from Redux
-		// --
-		// Redux gives us the means to manage the plugins that a theme will deploy, meaning we can transfer the values between instances of our theme
-		
+		// Takes data from the $plugin array and populates the properties of the class
+		if(!is_null($plugin) && is_array($plugin)) array_walk($plugin, array($this, 'create_from_array'));
 
 	}
 
-    // RPECK 18/07/2023 - Array
-    // Dump the array of the class's value
-    function to_array() {
-
-		// RPECK 18/07/2023 - Vars
-		// Gives us the means to allocate variable settings
-        $return = array();
-		$vars   = array('name', 'slug', 'source', 'required', 'version', 'force_activation', 'force_deactivation', 'external_url', 'is_callable');
-
-		// RPECK 18/07/2023 - Add Values to returned array
-		// This allows us to populate the array with only the values present by the plugin
-		foreach($vars as &$var) {
-
-			// RPECK 18/07/2023 - Populate the value of the array
-			// Only populate the value if it is present in the class
-			if(isset($this->$var) && !is_null($this->$var)) $return[$var] = $this->$var;
-
-		}
-
-		// Return
-		return $return;
-
-    }
+	// RPECK 21/07/2023 - Create From Array
+	// This is the callback function for array_walk above
+	public function create_from_array($value, $key) {
+		if(property_exists($this, $key)) $this->$key = $value;
+	}
 
 }

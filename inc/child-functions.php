@@ -26,52 +26,112 @@ if(!class_exists('TGM_Plugin_Activation') && file_exists(get_stylesheet_director
 // This allows us to get the child theme initialized (IE populated with content etc)
 function init() {
 
-	// RPECK 19/07/2023 - Config
-	// Filter that allows us to define the config options that the class requires
-	add_filter('KadenceChild\config', 'KadenceChild\set_config_defaults');
-
 	// RPECK 13/07/2023 - ChildTheme
 	// This loads the various classes required to run the theme
 	// The reason why we're using classes is because we want to instantize everything to make things work as systemically as possible
-	$child_theme = new ChildTheme;
+	$child_theme = new \KadenceChild\Theme;
 
 	// RPECK 19/07/2023 - Initialize Child Theme
-    // This needs to be added through the Wordpress system so that we can use filters etc
-    $child_theme->initialize();
+	// This needs to be added through the Wordpress system so that we can use filters etc
+	$child_theme->initialize();
 
 }
 
 //////////////////////////
 //////////////////////////
 
-// RPECK 19/07/2023 - Config Default
-// This is loaded via the functions.php file and is used to provide a means to filter the configuration options for the theme
-function set_config_defaults($config) {
+// RPECK 08/08/2023 - Section Defaults
+// Extracted from the core Theme class files into a separate set of child functions (to keep the core theme code lean)
+function default_sections($sections, $redux) {
 
-	// RPECK 19/07/2023 - Provide array to the filter
-	// This may change in structure but the following should suffice for now
-	$defaults = array(
-			
-		'KADENCE_CHILD_TEXT_DOMAIN' 	 => KADENCE_CHILD_TEXT_DOMAIN,
+    // RPECK 08/08/2023 - Default Sections
+    // The sections are used to provide the means to populate the sections from defaults
+    $default_sections = array(get_stylesheet_directory(), 'inc', 'defaults', '*');
+    
+    // RPECK 05/08/2023 - Initialize Classes
+    // Loops through the files in the globbed folder, allowing us to invoke the classes as needed
+    foreach(glob(implode(DIRECTORY_SEPARATOR, $default_sections)) as &$file) {
 
-		'KADENCE_CHILD_ADMIN_MENU_LABEL' => '🔥 Child Theme',
-		'KADENCE_CHILD_ADMIN_PAGE_TITLE' => 'Kadence Child Import Management',
+        // RPECK 08/08/2023 - Require files
+        // This should really go in the autoloader but because we've changed the file structure, we can put it here
+        require_once($file);
 
-		'KADENCE_CHILD_TGMPA_MENU_TITLE' => '➡️ Plugins',
-		'KADENCE_CHILD_TGMPA_PAGE_TITLE' => 'Install Required Plugins',
+        // RPECK 05/08/2023 - Get class name from path
+        // This takes a full path and allows us to extract the filename from it
+        $path = explode('/', str_replace('.php', '', $file));
 
-		'KADENCE_CHILD_REDUX_SECTIONS'	 => array('site', 'plugins', 'post_types')
+        // RPECK 08/08/2023 - CamelCase
+        // The default for this will be snake_case, which needs to be made into CamelCase to call the class
+        $filename = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', end($path)))));
 
-	);
+        // RPECK 05/08/2023 - Create Instance of Class
+        // Gives us the ability to get the functionality working
+        $class = '\KadenceChild\\' . $filename;
 
-	// RPECK 19/07/2023 - Return
-	// Return the value of the filter
-	return array_merge($defaults, $config);
+        // RPECK 05/08/2023 - New Class
+        // Sets up the class using the values inside it to get defaults
+        $klass = new $class($redux->opt_name);
+
+        // RPECK 05/08/2023 - Add the new element to the start of the sections array
+        // Gives us the ability to manage the system properly
+        if(is_array($sections)) array_unshift($sections, $klass);
+
+    }
+
+    // RPECK 08/08/2023 - Return sections
+    // This allows us to get the most value set up
+    return $sections;
 
 }
 
-//////////////////////////
-//////////////////////////
+// RPECK 01/08/2023 - Pre Update Option
+// This used to be in the theme's main class, but decided to extract it to keep that clean
+// --
+// It allows us to only update options if the values are different
+// https://developer.wordpress.org/reference/hooks/pre_update_option/
+function pre_update_option($new_value, $option, $old_value) {
+
+  // RPECK 29/07/2023 - Check if the new value is the same as the old
+  // If it is, return the new value, else the old 
+  return $new_value != $old_value ? $new_value : $old_value;
+
+}
+
+// RPECK 31/07/2023 - Change TGMPA Load Sequence
+// This removes the tgmpa 'init' action and replaces it at a higher priority (was messing up our load order with Redux)
+// --
+// https://github.com/TGMPA/TGM-Plugin-Activation/blob/2d34264f4fdcfcc60261d490ff2e689f0c33730c/class-tgm-plugin-activation.php#L277
+function change_tgmpa_load_sequence(){
+	
+	// RPECK 31/07/2023 - Only trigger if the TGMPA class is loaded
+	// This is needed to ensure we are able to call the class properly
+	if(class_exists('TGM_Plugin_Activation')) {
+
+		// RPECK 31/07/2023 - Added an instance of the class
+		// This is called here: https://github.com/TGMPA/TGM-Plugin-Activation/blob/2d34264f4fdcfcc60261d490ff2e689f0c33730c/class-tgm-plugin-activation.php#L2144
+		$tgmpa_theme_class = \TGM_Plugin_Activation::get_instance();
+
+		// RPECK 31/07/2023 - Remove 'init' action
+		// This needs a priority which was not being set inside TGMPA
+		remove_action('init', array( $tgmpa_theme_class, 'init' ));
+
+		// RPECK 31/07/2023 - Add the class again with priority
+		// Exactly the same functionality except we have added a priority this time
+		add_action('init', array( $tgmpa_theme_class, 'init' ), 100);
+		
+	}
+
+}
+
+// RPECK 04/08/2023 - Remove Code Snippets Notices
+// The notices that the 'code snippets' plugin adds should be removed
+function remove_code_snippets_notices() {
+
+    // RPECK 04/08/2023 - Remove Code Snippets Notices
+    // Gets rid of some of the actions that may be present
+    //remove_action('code_snippets/admin/manage', 'Code_Snippets\Admin\print_notices');
+
+}
 
 // RPECK 13/07/2023 - Remove Kadence notice(s)
 // This was added to ensure were not getting any unwanted messages from Kadence

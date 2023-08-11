@@ -5,36 +5,40 @@
 
 // RPECK 18/07/2023 - Autoloader
 // Loads our own classes within the theme (does not include vendor classes)
+// --
+// I originally made this myself but ended up adopting PSR-4 instead
 
 //////////////////////////
 //////////////////////////
 
-// RPECK 18/07/2023 - Autoload values
-// This brings in the values required to make the system work
+// RPECK 05/08/2023 - PSR-4
+// New set of standards to match PSR-4, ensuring we have the means to manage extended values properly
+// https://www.php-fig.org/psr/psr-4/
+// https://www.php-fig.org/psr/psr-4/examples/
 function kadence_child_autoloader($class) {
 
-    // RPECK 18/07/2023 - Namespace
-    // Defines the namespace from which the autoloader infers classes
-	$namespace = 'KadenceChild';
+    // RPECK 05/08/2023 - Vars
+    // Values used in the system to ensure the correct class values are populated
+    $namespace        = 'KadenceChild';
+    $namespace_length = strlen($namespace);
+    $base_directory   = __DIR__ . DIRECTORY_SEPARATOR . 'classes';
 
-    // RPECK 18/07/2023 - Namespace classed
-    // This means that we don't need to load our files if the autoloader is not pulling in the class
-    if(strpos($class, $namespace) == 0) {
+    // RPECK 05/08/2023 - Is the $class variable part of the namespace
+    // We only want to work with the namespace listed above
+    if(strncmp($namespace, $class, $namespace_length) !== 0) return;
 
-        // RPECK 18/07/2023 - Snake Case
-        // Because the class name itself is going to come in as KadenceChild\ClassName, we need to get rid of the namespace and snake case the class name
-        $class_snake_case = str_replace($namespace . '\\','', $class);
-        $class_snake_case = strtolower(preg_replace("/([a-z])([A-Z])/", "$1_$2", $class_snake_case));
+    // RPECK 05/08/2023 - Get relative class name
+    // This allows us to call the filename in the directory listed below
+    $relative_class = substr($class, $namespace_length);
 
-        // RPECK 18/07/2023 - Filename
-        // Variable used to test against
-        $filename = get_stylesheet_directory() . '/inc/classes/class-' . $class_snake_case . '.php';
-
-    }
+    // RPECK 05/08/2023 - Create the filename
+    // It will be passed onto the require directive below
+    $filename = $base_directory . str_replace('\\', '/', $relative_class) . '.php';
  
 	// RPECK 18/07/2023 - Require Once
     // If a class is loaded, it is loaded here
     if(isset($filename) && file_exists($filename)) require_once($filename);
+
 }  
 
 // RPECK 18/07/2023 - Include

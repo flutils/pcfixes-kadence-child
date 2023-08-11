@@ -326,9 +326,9 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 
 				add_filter( 'deprecated_file_trigger_error', array( $this, 'tick_file_deprecate_warning' ) );
 
-				$file = str_replace( '-', '_', $file );
+				$file = str_replace( '_', '-', $file );
 
-				_deprecated_file( esc_html( $file ), '4.0', esc_html( $old_file ), 'Please replace this outdated template with the current one from the Redux core.' );
+				_deprecated_file( esc_html( $old_file ), '4.0', esc_html( $file ), 'Please replace this outdated template with the current one from the Redux core.' );
 
 				if ( file_exists( $this->template_path . $file ) ) {
 					$path = $this->template_path . $file;
@@ -346,7 +346,21 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName
 			do_action( "redux/{$this->parent->args['opt_name']}/panel/template/" . $file . '/after' );
 
-			require $path;
+			if ( file_exists( $path ) ) {
+				if ( is_readable( $path ) ) {
+					require $path;
+				} else {
+					// translators: %1$s: template path.
+					echo '<div class="error"><p>' . sprintf( esc_html__( 'Redux Panel Template %1$s cannot be read. Please check the permissions for this file.', 'redux-framework' ), '<code>' . esc_html( $path ) . '</code>' ) . '</p></div>';
+				}
+			} else {
+				if ( file_exists( Redux_Core::$dir . 'templates/panel/' . $file ) ) {
+					require Redux_Core::$dir . 'templates/panel/' . $file;
+				} else {
+					// translators: %1$s: template path.
+					echo '<div class="error"><p>' . sprintf( esc_html__( 'Redux Panel Template %1$s does not exist. Please reinstall Redux to replace this file.', 'redux-framework' ), '<code>' . esc_html( $path ) . '</code>' ) . '</p></div>';
+				}
+			}
 		}
 
 		/**
@@ -398,11 +412,11 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 					$core_version      = Redux_Helpers::get_template_version( $this->original_path . $file );
 					$developer_version = Redux_Helpers::get_template_version( $developer_theme_file );
 
-					if ( $core_version && $developer_version && version_compare( $developer_version, $core_version, '<' ) && isset( $this->parent->args['dev_mode'] ) && ! empty( $this->parent->args['dev_mode'] ) ) {
+					if ( $core_version && $developer_version && version_compare( $developer_version, $core_version, '<' ) /* && isset( $this->parent->args['dev_mode'] ) && ! empty( $this->parent->args['dev_mode'] ) */ ) {
 						?>
 						<div id="message" class="error redux-message" style="display:block!important">
 							<p>
-								<strong><?php esc_html_e( 'Your panel has bundled copies of Redux Framework template files that are outdated!', 'redux-framework' ); ?></strong>&nbsp;&nbsp;<?php esc_html_e( 'Please update them now as functionality issues could arise.', 'redux-framework' ); ?>
+								<strong><?php esc_html_e( 'Your panel has bundled copies of Redux Framework template files that are outdated!', 'redux-framework' ); ?></strong>&nbsp;&nbsp;<?php esc_html_e( 'Please ask the author of this theme to update them as functionality issues could arise.', 'redux-framework' ); ?>
 							</p>
 						</div>
 						<?php

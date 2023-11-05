@@ -1,8 +1,7 @@
 lib/*
-!lib/index.php
 !lib/assets/index.php
 !lib/plugins/index.php
 !lib/acf-json/index.php
-!lib/relevanssi-live-search-ajax/index.php
-!lib/woocommerce//index.php
+!lib/relevanssi-live-ajax-search/index.php
+!lib/woocommerce/index.php
 !lib/index.php

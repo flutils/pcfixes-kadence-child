@@ -13,16 +13,16 @@ foreach(glob(get_stylesheet_directory() . "/inc/*.php") as &$file) { require_onc
 // RPECK 13/07/2023 - Actions
 // These are used to integrate with global hooks inside the system
 // I would have preferred to have these loaded via the call_user_func file, but they would need to integrate into the hooks instead
-add_action('init',                    'KadenceChild\remove_code_snippets_notices');   # => child-functions.php
-add_action('init', 					          'KadenceChild\change_tgmpa_load_sequence', 0); 	# => child-functions.php
-add_action('init', 			  		        'KadenceChild\remove_kadence_notices');  	  		# => child-functions.php
-add_action('admin_enqueue_scripts',   'KadenceChild\basic_css_menu_support');  	      # => child-functions.php
-add_action('acf/settings/load_json',  'KadenceChild\acf_json_load_point');		        # => child-functions.php
+add_action('init', 					'KadenceChild\change_tgmpa_load_sequence', 0); 	# => child-functions.php
+add_action('init', 			  		'KadenceChild\remove_kadence_notices');  	    # => child-functions.php
+add_action('admin_enqueue_scripts', 'KadenceChild\basic_css_menu_support');  	    # => child-functions.php
 
 // RPECK 01/08/2023 - Filters
 // Used to provide various filter endpoints through which to integrate
-add_filter('pre_update_option',     'KadenceChild\pre_update_option', 10, 3);           # => child-functions.php
-add_filter('KadenceChild\sections', 'KadenceChild\default_sections', 10, 2);            # => child-functions.php
+add_filter('acf/settings/save_json',  'KadenceChild\acf_json_load_point');		    # => child-functions.php
+add_filter('acf/settings/load_json',  'KadenceChild\acf_json_load_point');		    # => child-functions.php
+add_filter('pre_update_option',       'KadenceChild\pre_update_option', 10, 3);     # => child-functions.php
+add_filter('KadenceChild\sections',   'KadenceChild\default_sections', 10, 2);      # => child-functions.php
 
 // RPECK 28/07/2023 - Not Debug
 // These trigger only when Wordpress is NOT in debug mode

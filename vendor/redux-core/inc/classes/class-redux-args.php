@@ -3,6 +3,7 @@
  * Redux Framework Args Class
  *
  * @package     Redux_Framework/Classes
+ * @noinspection PhpConditionCheckedByNextConditionInspection
  */
 
 // Exit if accessed directly.
@@ -53,11 +54,11 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 		/**
 		 * Redux_Args constructor.
 		 *
-		 * @param     object $parent ReduxFramework object.
+		 * @param     object $redux ReduxFramework object.
 		 * @param     array  $args Global arguments array.
 		 */
-		public function __construct( $parent, array $args ) {
-			$this->parent = $parent;
+		public function __construct( $redux, array $args ) {
+			$this->parent = $redux;
 
 			$default = array(
 				'opt_name'                         => '',
@@ -157,6 +158,7 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 				'allow_tracking'                   => true,
 				'admin_theme'                      => 'wp',
 				'elusive_frontend'                 => false,
+				'fontawesome_frontend'             => false,
 				'pro'                              => array(),
 				'font_display'                     => 'swap', // block|swap|fallback|optional.
 				'load_on_cron'                     => false,
@@ -365,6 +367,7 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 		 * @param array $args Global args.
 		 *
 		 * @return array
+		 * @noinspection PhpStrictComparisonWithOperandsOfDifferentTypesInspection
 		 */
 		private function default_cleanup( array $args ): array {
 

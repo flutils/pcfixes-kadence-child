@@ -23,15 +23,17 @@
  * @noinspection PhpMissingParamTypeInspection
  * @noinspection PhpMissingReturnTypeInspection
  * @noinspection PhpUnhandledExceptionInspection
+ * @noinspection PhpDeprecationInspection
+ * @noinspection PhpUnused
  */
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-require_once dirname( __FILE__ ) . '/class-redux-core.php';
+require_once __DIR__ . '/class-redux-core.php';
 
-Redux_Core::$version    = '4.4.5';
-Redux_Core::$redux_path = dirname( __FILE__ );
+Redux_Core::$version    = '4.4.9';
+Redux_Core::$redux_path = __DIR__;
 Redux_Core::instance();
 
 // Don't duplicate me!
@@ -174,6 +176,20 @@ if ( ! class_exists( 'ReduxFramework', false ) ) {
 		 * @var array
 		 */
 		public $sanitize = array();
+
+		/**
+		 * Validation ran flag.
+		 *
+		 * @var bool
+		 */
+		public $validation_ran;
+
+		/**
+		 * No output flag.
+		 *
+		 * @var bool
+		 */
+		public $no_output;
 
 		/**
 		 * Array of current option values.
@@ -407,6 +423,20 @@ if ( ! class_exists( 'ReduxFramework', false ) ) {
 		public $localize_data = array();
 
 		/**
+		 * Array of checked transients used by Redux.
+		 *
+		 * @var array
+		 */
+		public $transients_check = array();
+
+		/**
+		 * Never save to DB flag for metaboxes.
+		 *
+		 * @var bool
+		 */
+		public $never_save_to_db;
+
+		/**
 		 * Deprecated shim for v3 templates.
 		 *
 		 * @var array
@@ -546,7 +576,6 @@ if ( ! class_exists( 'ReduxFramework', false ) ) {
 				new Redux_AJAX_Save( $this );
 				new Redux_AJAX_Typography( $this );
 				new Redux_AJAX_Select2( $this );
-				new Redux_Health( $this );
 			}
 
 			/**
@@ -879,12 +908,12 @@ if ( ! class_exists( 'ReduxFramework', false ) ) {
 		 * @access      public
 		 *
 		 * @param       string $opt_name The option name to return.
-		 * @param       mixed  $default  (null) The value to return if an option isn't set.
+		 * @param       mixed  $defaults (null) The value to return if an option isn't set.
 		 *
 		 * @return      mixed
 		 */
-		public function get( string $opt_name, $default = null ) {
-			return ( ! empty( $this->options[ $opt_name ] ) ) ? $this->options[ $opt_name ] : $this->options_class->get_default( $opt_name, $default );
+		public function get( string $opt_name, $defaults = null ) {
+			return ( ! empty( $this->options[ $opt_name ] ) ) ? $this->options[ $opt_name ] : $this->options_class->get_default( $opt_name, $defaults );
 		}
 
 		/**

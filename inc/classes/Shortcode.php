@@ -25,9 +25,9 @@ defined( 'ABSPATH' ) || exit;
 // This is used to provide the means to add shortcodes to the system
 class Shortcode {
 
-	// RPECK 04/08/2023 - Tag
+	// RPECK 04/08/2023 - Name
 	// (Required) The tag for the shortcode (IE what the shortcode is [shortcode_tag])
-	public $slug;
+	public $name;
 
 	// RPECK 04/08/2023 - Content
 	// The actual content of the shortcode
@@ -65,9 +65,17 @@ class Shortcode {
 
 		// RPECK 04/08/2023 - Adding the add_shortcode with the payload
 		// The payload is called from another function so it can be disabled
-		if(!is_null($this->tag) && !is_empty($this->content) && $this->active) add_shortcode($this->tag, array($this, 'execute'));
+		if(!is_null($this->name) && !is_empty($this->content) && $this->active) add_shortcode($this->name, array($this, 'execute'));
 
 	}
+
+	// RPECK 14/08/2023 - Execute our content payload
+	// This was required to ensure we don't have 
+	public function execute() {
+
+		
+
+	} 
 
 	//////////////////////////////
 	//////////////////////////////	

@@ -5,6 +5,7 @@
  * @class Redux_Options
  * @version 3.0.0
  * @package Redux Framework/Classes
+ * @noinspection PhpConditionCheckedByNextConditionInspection
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -45,15 +46,21 @@ if ( ! class_exists( 'Redux_Options_Constructor', false ) ) {
 		public $hidden_perm_sections = array();
 
 		/**
+		 * Array to hold default options.
+		 *
+		 * @var array
+		 */
+		private $options_defaults = array();
+
+		/**
 		 * Redux_Options constructor.
 		 *
-		 * @param object $parent ReduxFramework pointer.
+		 * @param object $redux ReduxFramework pointer.
 		 */
-		public function __construct( $parent ) {
-			parent::__construct( $parent );
+		public function __construct( $redux ) {
+			parent::__construct( $redux );
 
 			add_action( 'admin_init', array( $this, 'register' ) );
-
 		}
 
 		/**
@@ -158,8 +165,6 @@ if ( ! class_exists( 'Redux_Options_Constructor', false ) ) {
 			$core->transients['last_save'] = time();
 
 			if ( ! empty( $value ) ) {
-				$core->options = $value;
-
 				switch ( $core->args['database'] ) {
 					case 'transient':
 						set_transient( $core->args['opt_name'] . '-transient', $value, $core->args['transient_time'] );
@@ -223,16 +228,6 @@ if ( ! class_exists( 'Redux_Options_Constructor', false ) ) {
 
 				// phpcs:ignore WordPress.NamingConventions.ValidHookName
 				$GLOBALS[ $options_global ] = apply_filters( "redux/options/{$core->args['opt_name']}/global_variable", $core->options );
-
-				// Last save key.
-				if ( isset( $core->transients['last_save'] ) ) {
-					//$GLOBALS[ $options_global ]['REDUX_LAST_SAVE'] = $core->transients['last_save'] ?? '';
-				}
-
-				// Last compiler hook key.
-				if ( isset( $core->transients['last_compiler'] ) ) {
-					//$GLOBALS[ $options_global ]['REDUX_LAST_COMPILER'] = $core->transients['last_compiler'] ?? '';
-				}
 			}
 		}
 
@@ -318,7 +313,7 @@ if ( ! class_exists( 'Redux_Options_Constructor', false ) ) {
 						foreach ( $section['fields'] as $field_data ) {
 							$field_type = $field_data['type'];
 
-							if ( 'section' !== $field_type || 'divide' !== $field_type || 'info' !== $field_type || 'raw' !== $field_type ) {
+							if ( ! in_array( $field_type, array( 'section', 'divide', 'info', 'raw' ), true ) ) {
 								$field_id = $field_data['id'];
 								$default  = $core->options_defaults[ $field_id ] ?? '';
 								$data     = $core->options[ $field_id ] ?? $default;
@@ -549,7 +544,7 @@ if ( ! class_exists( 'Redux_Options_Constructor', false ) ) {
 						// phpcs:ignore WordPress.NamingConventions.ValidHookName
 						$field = apply_filters( "redux/options/{$core->args['opt_name']}/field/{$field['id']}", $field );
 
-						if ( empty( $field ) || ! $field ) {
+						if ( empty( $field ) ) {
 							unset( $core->sections[ $k ]['fields'][ $fieldk ] );
 							continue;
 						}
@@ -971,23 +966,23 @@ if ( ! class_exists( 'Redux_Options_Constructor', false ) ) {
 		 * ->get_default(); This is used to return the default value if default_show is set.
 		 *
 		 * @param string $opt_name The option name to return.
-		 * @param mixed  $default  (null) The value to return if default not set.
+		 * @param mixed  $defaults (null) The value to return if default not set.
 		 *
 		 * @return      mixed $default
 		 * @since       1.0.1
 		 * @access      public
 		 */
-		public function get_default( string $opt_name, $default = null ) {
+		public function get_default( string $opt_name, $defaults = null ) {
 			if ( true === $this->args['default_show'] ) {
 
 				if ( empty( $this->options_defaults ) ) {
 					$this->default_values(); // fill cache.
 				}
 
-				$default = array_key_exists( $opt_name, $this->options_defaults ) ? $this->options_defaults[ $opt_name ] : $default;
+				return array_key_exists( $opt_name, $this->options_defaults ) ? $this->options_defaults[ $opt_name ] : $defaults;
 			}
 
-			return $default;
+			return '';
 		}
 
 		/**

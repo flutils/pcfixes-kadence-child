@@ -16,6 +16,7 @@ namespace KadenceChild;
 // RPECK 04/08/2023 - Libraries
 // Loads the various classes & functions required by the class
 use KadenceChild\Redux\Section;
+use KadenceChild\PostType;
 use Redux_Helpers;
 
 // RPECK 16/07/2023 - No direct access
@@ -37,8 +38,9 @@ class PostTypes extends Section {
 			'id'      => 'post_types',
 			'title'   => 'CPT\'s',
 			'icon'    => 'el-icon-bullhorn',
-			'heading' => 'Post Types',
+			'heading' => '<h1><strong>🖊️ CPT\'s</strong></h1>',
 			'desc'    => '
+				--<br />
 				<strong>CPT\'s created by the theme. This is handled via a repeater block with a strict structure for the fields.</strong>
 				<p>These are registered in Wordpress with the <a href="https://developer.wordpress.org/reference/functions/register_post_type/#parameters" target="_blank">register_post_type()</a> function.</p>
 			',
@@ -83,7 +85,7 @@ class PostTypes extends Section {
 						// RPECK 03/08/2023 - Description
 						// What to show on the likes of the CPT archive page etc
 						array(
-							'id'          => 'Description',
+							'id'          => 'description',
 							'type'        => 'textarea',
 							'placeholder' => 'Type the description here (optional)',
 							'title'       => 'Description',
@@ -110,6 +112,7 @@ class PostTypes extends Section {
 							'type'     => 'color_palette',
 							'title'    => 'Colour',
 							'subtitle' => 'Used in the admin menu to differentiate between different CPT\'s',
+							'default'  => '#FFFFFF',
 							'options'  => array(
 								'colors' => Redux_Helpers::get_material_design_colors('primary'),
 								'style'  => 'round',
@@ -117,17 +120,45 @@ class PostTypes extends Section {
 							)
 						),
 
+						// RPECK 22/08/2023 - Taxonomies
+						// Used to populate the various taxonomies that the CPT can be associated with
+						// --
+						// https://wpshout.com/add-existing-taxonomies-wordpress-custom-post-types/
+						array(
+							'id'    	=> 'taxonomies',
+							'type'  	=> 'button_set',
+							'title' 	=> 'Taxonomies', 
+							'subtitle' 	=> 'Allocate different taxonomical structures to the CPT',
+							'data'  	=> 'taxonomies',
+							'multi' 	=> true,
+							'args'  	=> array(
+								'hide_empty' => false
+							)
+						),
+
 						// RPECK 03/08/2023 - Public
 						// Whether the CPT is considered 'public'?
 						array(
-							'id'      	=> 'public',
+							'id'      	=> 'is_public',
 							'type'    	=> 'switch',
 							'title'   	=> 'Public?',
 							'subtitle'	=> 'Should the CPT be publicly visible?',
-							'default'	=> true,
+							'default'	=> false,
 							'on'		=> 'Yes',
 							'off'		=> 'No'
 						),	
+
+						// RPECK 09/08/2023 - Archive
+						// Should the post have an archive in the front end?
+						array(
+							'id'      	=> 'has_archive',
+							'type'    	=> 'switch',
+							'title'   	=> 'Has Archive?',
+							'subtitle'	=> 'Should the CPT have an archive page?',
+							'default'	=> false,
+							'on'		=> 'Yes',
+							'off'		=> 'No'
+						),
 
 						// RPECK 03/08/2023 - Hierarchy
 						// Does the CPT accept parent/child arguments?
@@ -136,19 +167,7 @@ class PostTypes extends Section {
 							'type'    	=> 'switch',
 							'title'   	=> 'Hierarchical?',
 							'subtitle'	=> 'Whether the post type is hierarchical (e.g. page).',
-							'default'	=> true,
-							'on'		=> 'Yes',
-							'off'		=> 'No'
-						),
-
-						// RPECK 09/08/2023 - Archive
-						// Should the post have an archive in the front end?
-						array(
-							'id'      	=> 'hierarchical',
-							'type'    	=> 'switch',
-							'title'   	=> 'Hierarchical?',
-							'subtitle'	=> 'Whether the post type is hierarchical (e.g. page).',
-							'default'	=> true,
+							'default'	=> false,
 							'on'		=> 'Yes',
 							'off'		=> 'No'
 						),
@@ -236,59 +255,122 @@ class PostTypes extends Section {
 							'default'	=> true,
 							'on'		=> 'Yes',
 							'off'		=> 'No'
+						),
+
+						// RPECK 05/09/2023 - Supports
+						// Various functionality the CPT is able to support
+						array(
+							'id'      	=> 'supports',
+							'type'    	=> 'button_set',
+							'title'   	=> 'Supports',
+							'subtitle'	=> 'Which options the CPT supports',
+							'multi'		=> true,
+							'default'	=> array('title', 'editor', 'comments', 'revisions', 'trackbacks', 'author', 'excerpt', 'page-attributes', 'thumbnail', 'custom-fields', 'post-formats'),
+							'options'	=> array(
+								'title' 			=> 'Title',
+								'editor'			=> 'Editor',
+								'comments'			=> 'Comments',
+								'revisions'			=> 'Revisions',
+								'trackbacks' 		=> 'Trackbacks',
+								'author'			=> 'Author',
+								'excerpt'			=> 'Excerpt',
+								'page-attributes' 	=> 'Page Attributes',
+								'thumbnail'	  		=> 'Featured Image',
+								'custom-fields'	  	=> 'Custom Fields',
+								'post-formats'    	=> 'Post Formats'
+							)
 						)	
 
 					),
+					'save_callback' => function($value) {
+
+						// RPECK 20/08/2023 - Refresh Permalinks
+						// This is required if you change the registered CPT's or Taxonomies
+						// --
+						// https://wordpress.stackexchange.com/questions/36306/how-do-i-programmatically-force-custom-permalinks-with-my-theme
+						global $wp_rewrite; 
+
+						//Flush the rules and tell it to write htaccess
+						$wp_rewrite->flush_rules( true );
+
+					},
                     'load_callback' => function($value) {
                         
                         // RPECK 08/08/2023 - Loop through the Post Types repeater and get the values that are present therein
                         // The $value variable is going to be populated with an array of data which needs to be validated
-                        if( is_array($value) && array_key_exists('redux_repeater_data', $value) ) {
+                        if(is_array($value) && array_key_exists('redux_repeater_data', $value)) {
 
-							// RPECK 09/08/2023 - Pass data to the CPT filter
-							// Likely needs to change but should give us the ability to manage exactly how it works	
-							add_filter('KadenceChild\post_types', function($post_types) use ($value) {
+							// RPECK 25/08/2023 - Set $val 
+							// Will be populated with the different values from the $value variable
+							$val = Helpers::repeaterData($value);
 
-								// RPECK 08/08/2023 - Vars
-								// This allows us to ensure we can store the values required inside the system properly
-								$val = array();
+							// RPECK 09/08/2023 - Take the above array and turn it into an array of PostType classes, which can then be initialized (IE registered)
+							// This will set up the various CPT's for use inside our engine
+							if(is_array($val) && count($val) > 0) {
 
-								// RPECK 31/07/2023 - Loop through values presented to the function
-								// The structure of Redux repeater fields seems to be a block of data called 'repeater_field_data' and then associative arrays off the back of it
-								foreach($value as $key => $v) {
+								// RPECK 09/08/2023 - Vars
+								// Various values used within the system
+								$colours = array();
 
-									// RPECK 31/07/2023 - Loop through the recursive array elements
-									// This is needed to ensure we are able to catch all of the provided plugins (IE 0, 1, 2 etc)
-									foreach($v as $index => $item) {
+								// RPECK 09/08/2023 - Post Types
+								// Goes through the predefined posts and allows us to register them as needed
+								array_walk($val, function(&$post_type) use (&$colours, &$slugs) {
 
-										// RPECK 31/07/2023 - If the value is not an array, add it to our $val variable defined above
-										// This builds the various values we require to ensure TGMPA has the appropriate values
-										if(!is_array($item)) {
-											
-											// RPECK 01/08/2023 - Add the item if it is not an array
-											// This is required to ensure we have the correct set up for the various settings to be passed to the TGMPA plugin
-											$val[ $index ][ $key ] = $item;
+									// RPECK 09/08/2023 - Check to see if the post type is an array or instance of PostType
+									// If it is an instance, don't do anything
+									if(!($post_type instanceof \KadenceChild\PostType)) $post_type = new PostType($post_type);
 
-										}
+									// RPECK 09/08/2023 - Initialize 
+									// Every post type needs to be initialized if the type has not been registered previously
+									if(property_exists($post_type, 'slug') && !post_type_exists($post_type->slug)) {
+										
+										// RPECK 25/08/2023 - Initialize
+										// This calls the init function on the PostType class, allowing us to register the post
+										$post_type->initialize();
+
+										// RPECK 25/08/2023 - Colours
+										// Gives us the ability to populate the colours array with payload data, which can then be outputted as CSS
+										$colours[ $post_type->slug ] = $post_type->admin_styling();
 
 									}
 
+								});
+
+								// RPECK 09/08/2023 - Menu Colours
+								// This gives us the ability to change the different colours for the admin menu items assigned to a CPT
+								if(!is_customize_preview() && is_admin()) {
+									
+									// RPECK 16/08/2023 - Enqueue the scripts as required to populate the CSS
+									// This is the cleanest way to do it
+									add_action('admin_enqueue_scripts', function() use ($colours) {
+
+										// RPECK 16/08/2023 - Create inline styles
+										// This was added so we would not get any header notifications in the customizer
+										// --
+										// https://wordpress.stackexchange.com/a/282868
+										wp_register_style('admin_menu_values', false);
+										wp_enqueue_style('admin_menu_values');
+
+										// RPECK 11/08/2023 - Return
+										// Allows us to return the menu object
+										wp_add_inline_style('admin_menu_values', implode('', array_values($colours)));
+										
+										// RPECK 04/11/2023 - Add custom styling only for the CPT's
+										// This was added because our old method was not able to identify the CPT's we have added vs other CPT's (possibly added by plugins)
+										wp_add_inline_style('admin_menu_values', PostType::admin_menu_styling( array_keys($colours) ));
+
+									});
+
 								}
 
-								// RPECK 09/08/2023 - Merge 
-								// Combines the values we've just added to provide the means to pass the data to TGMPA
-								if(!empty($val)) $post_types = array_merge($val, $post_types);
-
-								// RPECK 09/08/2023 - Return the new $plugins variable to TGMPA
-								// This is needed to ensure we are populating the plugins correctly
-								return $post_types;
-
-							});
+							}	
 
                         }
 
-                    },
+                    }
+					
 				)
+				
 			)
 			
 		);

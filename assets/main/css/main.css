@@ -1,0 +1,71 @@
+/*
+    RPECK 14/08/2023 - Wordpress branding removal on admin bar
+    This was originally in the admin CSS only but we need it in the public view too
+*/
+body.wp_removed #wp-admin-bar-wp-logo,
+body.wp_removed #wpadminbar .quicklinks li .blavatar { display: none; }
+
+/* 
+	RPECK 20/08/2023 - Remove user select from brand logo
+	Personal preference but I find it far more useful to get rid of text select for those types of things
+*/
+.brand.has-logo-image { user-select: none; }
+
+/* 
+	RPECK 22/08/2023 - Kadence Modal Overlay
+	Used to manage the way the overlay of the Kadence "modal" block is handled
+*/
+.kt-modal-overlay { cursor: pointer; }
+.kt-modal-overlay > .kt-modal-container { cursor: default !important; }
+
+/*
+	RPECK 24/08/2023 - Kadence Announcement Bar
+	Extracted from elements so we can use it across different installs
+*/
+announcement-bar {
+    position: sticky;
+    top: var(--wp-admin--admin-bar--height, 0);
+    z-index: 1000;
+    transition: max-height 0.15s ease;
+    max-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--global-palette2);
+    color: white;
+}
+
+announcement-bar[data-open="true"] {
+    max-height: 150px;
+}
+
+announcement-bar .site-container {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+announcement-bar .text {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    display: block;
+}
+
+announcement-bar .close-popup {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    background-color: transparent;
+    padding: 5px !important;
+    line-height: 1;
+    user-select: none;
+}
+
+announcement-bar .close-popup:not(.fas):after { 
+    content: "×";
+}

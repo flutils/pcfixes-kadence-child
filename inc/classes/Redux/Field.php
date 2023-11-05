@@ -13,6 +13,10 @@
 // This was taken from the primary Kadence system - no need to change it
 namespace KadenceChild\Redux;
 
+// RPECK 17/08/2023 - Constants
+// Used to provide us with the means to manage the underlying constants within the class
+use const KadenceChild\KADENCE_CHILD_TEXT_DOMAIN;
+
 // RPECK 16/07/2023 - No direct access
 // Maintain the security of the system by blocking anyone who tries to access the file directly
 defined( 'ABSPATH' ) || exit;
@@ -114,6 +118,10 @@ class Field {
 	// (Optional) This is one of the options on the 'icon-select' extension. As it defaults to true, we need to explicitly define it as false to disable
 	public $fontawesome = false;
 
+	// RPECK 25/08/2023 - Dashicons
+	// (Optional) Used by the icon-select field to filter the type of library used for the icons. Defaults to true
+	public $dashicons = true;
+
 	// RPECK 26/07/2023 - Elusive Icons
 	// (Optional) Used in the 'icon-select' extension. Need to disable explicitly
 	public $elusive = false;
@@ -151,6 +159,46 @@ class Field {
     // --
     // https://devs.redux.io/core-fields/ace-editor.html#arguments
     public $mode;
+
+	// RPECK 14/08/2023 - Init Empty
+	// (Optional) allows the repeater field to load up empty (defaults to true)
+	public $init_empty = true;
+
+	// RPECK 16/08/2023 - Save Callback
+	// Used to populate dynamic callback functions, can ignore
+	public $save_callback;
+
+	// RPECK 16/08/2023 - Load Callback
+	// Used to populate dynamic callback functions, can ignore
+	public $load_callback;
+
+	// RPECK 17/08/2023 - Dynamic text
+	// Hook used to provide the means to output the field's TEXT content to Kadence Blocks
+	// --
+	// Defaults to false - if true, we need to add a filter to allow Kadence to dynamically allocate different pieces of content
+	public $dynamic_text = false;
+	
+	// RPECK 18/08/2023 - Dynamic Link
+	// Hook used to provide the means to output the field's URL content to Kadence Blocks
+	// --
+	// Defaults to false - if true, we need to add a filter to allow Kadence to dynamically allocate different pieces of content
+	public $dynamic_link = false;
+
+	// RPECK 21/08/2023 - Dynamic Conditional
+	// Used to provide the means to allocate different conditional items in dynamic blocks
+	public $dynamic_conditional = false;
+
+	// RPECK 22/08/2023 - Multi
+	// Used in the select field to provide the means to allocate multiple items per field 
+	public $multi = false;
+
+	// RPECK 27/08/2023 - Args
+	// Allows us to change the various details required for the multi field types
+	public $args;
+
+    // RPECK 10/09/2023 - Show
+    // Used in the slides field
+    public $show;
 
 	// RPECK 24/07/2023 - Constructor
 	// Accepts arguments used to populate the section
@@ -222,6 +270,56 @@ class Field {
 			$this->get_array()   
 		);
 
+		// RPECK 17/08/2023 - If the dynamic content property is true / present, we need to allocate the various items 
+		// We've added this per field, which may create a lot of unwanted filter values, but we'll see
+		if($this->dynamic_text != false || $this->dynamic_link != false || $this->dynamic_conditional != false) add_filter('kadence_dynamic_content_render', array($this, 'dynamic_content_render'), 10, 9);
+
+	}
+
+	// RPECK 17/08/2023 - Dynamic Content Render
+	// Gives us the ability to outline exactly what response should be provided per field
+	// --
+	// ./wp-content/kadence-blocks-pro/includes/dynamic-content/class-kadence-blocks-pro-dynamic-content.php#3036
+	public function dynamic_content_render($output, $item_id, $origin, $group, $field, $para, $custom, $relate, $relcustom) {
+
+		// RPECK 17/08/2023 - Check to see if we're dealing with Redux
+		// Because the other groups have been hard-coded by the plugin, we need to populate this ourselves
+		if(str_starts_with($group, 'redux') && $field == $this->id) {
+			
+			// RPECK 17/08/2023 - Global
+			// Get the global redux variable
+			global $kadence_child_theme;
+			
+			// RPECK 18/08/2023 - Dynamic property
+			// This is required to give us the means to get the various properties depending on which group is used
+			preg_match('/redux_(.*)/', $group, $matches);
+			
+			// RPECK 18/08/2023 - If matches are populated
+			// Gives us the means to manage what code is run as a result of the matches being loaded
+			if(is_array($matches) && isset($matches[1])) {
+				
+				// RPECK 17/08/2023 - Set dynamic property
+				// This is a variable we can use to call the right data
+				$dynamic_property = "dynamic_{$matches[1]}";
+	
+				// RPECK 17/08/2023 - Check if closure
+				// Closure is an anonymous function, which is one of the values we can pass to dynamic_content
+				// --
+				// If the value of dynamic_content is a Closure, we need to get the value of $output by executing it
+				$value = ($this->$dynamic_property instanceof \Closure) ? call_user_func($this->$dynamic_property, $kadence_child_theme[ $this->id ]) : $kadence_child_theme[ $this->id ];
+
+				// RPECK 17/08/2023 - Output the field value (no need for loop because this is per field)
+				// This needs to be coded to co-incide with the original setting of these (probably with a class)
+				$output = apply_filters('KadenceChild\redux_dynamic_render_{$this->id}', $value);
+				
+			}
+			
+		}
+		
+		// RPECK 17/08/2023 - Return the generated output
+		// Because this filter is used by all of the dynamic content, we need to pass the $output through regardless
+		return $output;
+
 	}
 
 	// RPECK 26/07/2023 - Value Array
@@ -234,7 +332,7 @@ class Field {
 
 		// RPECK 26/07/2023 - Loops through properties and returns an array of values
 		// This uses array_walk to traverse the object vars of the system
-		array_walk(get_object_vars($this), function($value, $key) use (&$return) {
+		foreach(get_object_vars($this) as $key => $value) {
 
 			// RPECK 27/07/2023 - Only proceed if the $value is populated
 			if(!is_null($value)) {
@@ -265,7 +363,7 @@ class Field {
 
 			}
 
-		});
+		}
 
 		// RPECK 26/07/2023 - Return
 		// This gives us the ability to return the data to the function which called it
@@ -273,9 +371,9 @@ class Field {
 
 	}
 
-	// RPECK 06/08/2023 - Trigger
-	// This was the same function used twice, so we can put it into the same one now
-	public function trigger($action = 'load', $value) {
+	// RPECK 06/08/2023 - Actions
+	// This used to be a single callback, but I found the "save" hook was generic (IE passed through values, not just changed)
+	public function trigger($action, $value, $opt_name) {
 
 		// RPECK 07/08/2023 - Get the $action value
 		// Because we're passing 'load' or 'save' as the action, we need to create a variable with the actual callback name
@@ -286,7 +384,7 @@ class Field {
 		// --
 		// https://stackoverflow.com/a/1499867/1143732
 		// https://stackoverflow.com/a/12196632/1143732
-		if(property_exists($this, $callback) && !is_null($this->$callback)) call_user_func($this->$callback, $value);
+		if(property_exists($this, $callback) && !is_null($this->$callback)) call_user_func($this->$callback, $value, $opt_name);
 
 	}
 

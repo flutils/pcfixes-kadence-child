@@ -5,6 +5,7 @@
  * @class Redux_Core
  * @version 4.0.0
  * @package Redux Framework/Classes
+ * @noinspection PhpIgnoredClassAliasDeclaration
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -47,20 +48,21 @@ if ( ! class_exists( 'Redux_Enqueue', false ) ) {
 		/**
 		 * Redux_Enqueue constructor.
 		 *
-		 * @param     object $parent ReduxFramework pointer.
+		 * @param     object $redux ReduxFramework pointer.
 		 */
-		public function __construct( $parent ) {
-			parent::__construct( $parent );
+		public function __construct( $redux ) {
+			parent::__construct( $redux );
 
 			// Enqueue the admin page CSS and JS.
-			if ( isset( $_GET['page'] ) && $_GET['page'] === $parent->args['page_slug'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+			if ( isset( $_GET['page'] ) && $_GET['page'] === $redux->args['page_slug'] ) { // phpcs:ignore WordPress.Security.NonceVerification
 				add_action( 'admin_enqueue_scripts', array( $this, 'init' ), 1 );
 			}
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'frontend_init' ), 10 );
 
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName
-			do_action( "redux/{$parent->args['opt_name']}/enqueue/construct", $this );
+			do_action( "redux/{$redux->args['opt_name']}/enqueue/construct", $this );
+
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName
 			do_action( 'redux/enqueue/construct', $this );
 		}
@@ -73,6 +75,10 @@ if ( ! class_exists( 'Redux_Enqueue', false ) ) {
 
 			if ( $core->args['elusive_frontend'] ) {
 				Redux_Functions_Ex::enqueue_elusive_font();
+			}
+
+			if ( $core->args['fontawesome_frontend'] ) {
+				Redux_Functions_Ex::enqueue_font_awesome();
 			}
 		}
 
@@ -501,7 +507,7 @@ if ( ! class_exists( 'Redux_Enqueue', false ) ) {
 		}
 
 		/**
-		 * Build a localize array from field functions, if any.
+		 * Build a localized array from field functions, if any.
 		 *
 		 * @param object $core ReduxFramework object.
 		 * @param string $type Field type.
@@ -519,8 +525,8 @@ if ( ! class_exists( 'Redux_Enqueue', false ) ) {
 							$messages[ $msg['section_id'] ]['total'] = 0;
 						}
 
-						$messages[ $msg['section_id'] ]['total'] ++;
-						$the_total ++;
+						++$messages[ $msg['section_id'] ]['total'];
+						++$the_total;
 					}
 				}
 
@@ -534,7 +540,7 @@ if ( ! class_exists( 'Redux_Enqueue', false ) ) {
 		}
 
 		/**
-		 * Compile panel errors and wearings for a localize array.
+		 * Compile panel errors and wearings for a localized array.
 		 */
 		public function get_warnings_and_errors_array() {
 			$core = $this->core();
@@ -564,9 +570,11 @@ if ( ! class_exists( 'Redux_Enqueue', false ) ) {
 
 			$this->localize_data['required'] = $core->required;
 			$this->repeater_data['fonts']    = $core->fonts;
+
 			if ( ! isset( $this->repeater_data['opt_names'] ) ) {
 				$this->repeater_data['opt_names'] = array();
 			}
+
 			$this->repeater_data['opt_names'][]    = $core->args['opt_name'];
 			$this->repeater_data['folds']          = array();
 			$this->localize_data['required_child'] = $core->required_child;

@@ -93,6 +93,10 @@ class Section {
 	// RPECK 24/07/2023 - Disabled
 	// (Optional) If the section is disabled or not
 	public $disabled = false;
+
+	// RPECK 16/08/2023 - Opt Name
+	// (Optional) Required to get rid of PHP 8.2 dynamic property deprecation errors
+	public $opt_name;
  
 	// RPECK 24/07/2023 - Constructor
 	// Accepts arguments used to populate the section
@@ -169,12 +173,12 @@ class Section {
 		// https://devs.redux.io/configuration/objects/section.html
 		\Redux::set_section($this->opt_name,
 			array(
-			'id'      	 => $this->id,
-			'title'   	 => __($this->title,   KADENCE_CHILD_TEXT_DOMAIN),
-			'icon'    	 => __($this->icon,    KADENCE_CHILD_TEXT_DOMAIN),
-			'heading' 	 => __($this->heading, KADENCE_CHILD_TEXT_DOMAIN),
-			'desc'    	 => __($this->desc,    KADENCE_CHILD_TEXT_DOMAIN),
-			'subsection' => $this->subsection
+				'id'      	 => $this->id,
+				'title'   	 => __($this->title,   KADENCE_CHILD_TEXT_DOMAIN),
+				'icon'    	 => __($this->icon,    KADENCE_CHILD_TEXT_DOMAIN),
+				'heading' 	 => __($this->heading, KADENCE_CHILD_TEXT_DOMAIN),
+				'desc'    	 => __($this->desc,    KADENCE_CHILD_TEXT_DOMAIN),
+				'subsection' => $this->subsection
 			),
 			$this->replace
 		);
@@ -183,13 +187,15 @@ class Section {
 		// If the fields are true, it means we are going to set the section's fields at the same time as the section itself 
 		if($set_fields) $this->set_fields();
 
-		// RPECK 29/07/2023 - On Save
-		// Hooks into the "save" process of the fields
-		add_action("redux/options/{$this->opt_name}/saved", array($this, 'on_save'), 0);
-
 		// RPECK 06/08/2023 - On Load
 		// This loads the various settings at initialization of the system
 		add_action('redux/loaded', array($this, 'on_load'), 0);
+
+		// RPECK 13/08/2023 - On Save
+		// Used to give us the means to manage the saved values to the field
+		// --
+		// https://github.com/reduxframework/redux-framework/blob/36eee9d2ce4ec598673f48ff7f54ab5c734988d0/redux-core/inc/classes/class-redux-panel.php#L245
+		add_action("redux/options/{$this->opt_name}/settings/change", array($this, 'on_save'), 10, 2);
 
     }
 
@@ -216,22 +222,6 @@ class Section {
 
 	}
 
-	// RPECK 04/08/2023 - On Save
-	// Triggered when Redux is saved. Extracted to the Section class so we can systemetize it all
-	public function on_save($options) {
-
-		// RPECK 05/08/2023 - Trigger save function of fields
-		// This will run whatever is attached to the field
-		foreach($this->fields as &$field) {
-
-			// RPECK 06/08/2023 - Field run save callback whilst passing the option value
-			// This slims down the functionality massively
-			if(!empty($options[ $field->id ])) $field->trigger('save', $options[ $field->id ] );
-
-		}
-		
-	}
-
 	// RPECK 06/08/2023 - On Load
 	// Triggered when Redux is loaded. It does not pass any values
 	public function on_load() {
@@ -253,7 +243,40 @@ class Section {
 
 			// RPECK 06/08/2023 - Field run save callback whilst passing the option value
 			// This slims down the functionality massively
-			if(array_key_exists($field->id, ${$global_variable_name}) && !is_null(${$global_variable_name}[ $field->id ])) $field->trigger('load', ${$global_variable_name}[ $field->id ] );
+			if(array_key_exists($field->id, ${$global_variable_name}) && !is_null(${$global_variable_name}[ $field->id ])) $field->trigger('load', ${$global_variable_name}[ $field->id ], $this->opt_name);
+
+		}
+		
+	}
+
+	// RPECK 06/08/2023 - On Save
+	// Triggered when fields are saved (allows us to identify what items have changed and invoke functionality accordingly)
+	public function on_save($options, $changed_values) {
+
+		// RPECK 13/08/2023 - Get the array of changed values and trigger the save callback on any of the fields it contains
+		// This was done to ensure we are not going to end up with problems with the system triggering every field save function each time
+		if(is_array($changed_values) && count($changed_values) > 0) {
+
+			// RPECK 13/08/2023 - Get the values of the fields that changed
+			// The actual values are mostly obsolete, so we just need to get the keys
+			$keys = array_keys($changed_values);
+
+			// RPECK 13/08/2023 - Fields
+			// This should give us an array of the fields contained within the class that have the values changed
+			$changed_fields = array_filter($this->fields, function(&$field) use ($keys) {
+				return in_array($field->id, $keys);
+			});
+
+			// RPECK 05/08/2023 - Trigger save function of fields
+			// This will run whatever is attached to the field
+			foreach($changed_fields as &$field) {
+
+				// RPECK 06/08/2023 - Field run save callback whilst passing the option value
+				// This slims down the functionality massively
+				if(isset($options[ $field->id ])) $field->trigger('save', $options[ $field->id ], $this->opt_name);
+
+			}
+
 
 		}
 		

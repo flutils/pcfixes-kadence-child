@@ -5,27 +5,42 @@
 .redux-main .redux-container-color_palette .colors-wrapper .color-palette-color { user-select: none; }
 
 /*
-  RPECK 28/07/2023 - Admin menu colours
-  This was added to give us a standard way to manage the colours of CPT's in the admin menu
+    RPECK 13/08/2023 - Redux Section Hover Colour
+    Adds a custom background colour to the redux section on hover and select
 */
-#adminmenu  li.menu-top[id^="menu-posts-"] > a,
-#adminmenu  li.menu-top[id^="menu-posts-"] > .wp-submenu,
-#adminmenu  li.menu-top[id^="menu-posts-"] > .wp-menu-arrow {
-	background-color: var(--background-color, inherit);
-	color: var(--menu-color, #fff);
+.redux-container .redux-sidebar .redux-group-menu li.active a,
+.redux-container .redux-sidebar .redux-group-menu li a:hover,
+.redux-container .redux-sidebar .redux-group-menu li.activeChild.hasSubSections a {
+    background-color: #000 !important;
 }
-#adminmenu li.menu-top[id^="menu-posts-"] a:is(:hover, :active, :focus),
-#adminmenu li.menu-top[id^="menu-posts-"]:is(:hover, :active, :focus) div.wp-menu-image:before {
-	color: var(--menu-color, #fff) !important;
+.redux-container .redux-sidebar .redux-group-menu li .subsection .redux-group-tab-link-li .redux-group-tab-link-a:hover {
+    color: white !important;
 }
-#adminmenu li[id^="menu-posts-"].wp-has-submenu.wp-not-current-submenu.opensub:hover:after,
-#adminmenu li[id^="menu-posts-"].wp-has-submenu.wp-not-current-submenu:focus-within:after {
-	border-right-color: var(--background-color, inherit) !important;
-} 
-#adminmenu li[id^="menu-posts-"] a:focus div.wp-menu-image:before,
-#adminmenu li[id^="menu-posts-"].opensub div.wp-menu-image:before,
-#adminmenu li[id^="menu-posts-"]:hover div.wp-menu-image:before {
-    color: unset;
+
+/*
+	RPECK 13/08/2023 - Sidebar sticky
+	Adds extra layer of finesse to the system (can't have overflow)
+*/
+.redux-container {
+	overflow: unset !important;
+	background-color: unset !important;
+	background-image: unset !important;
+	mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+	-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+	clip-path: inset(0 round 10px 10px 0 0) !important;
+	-webkit-clip-path: inset(0 round 10px 10px 0 0) !important;
+}
+.redux-container .redux-sidebar {
+	position: sticky;
+	top: calc(0px + var(--wp-admin--admin-bar--height, 0));
+}
+
+/*
+	RPECK 13/08/2023 - Repeater cursor
+	Overrides the default cursor, which is the text icon 
+*/
+.redux-container-repeater .redux-repeater-accordion-repeater h3.ui-accordion-header {
+	cursor: pointer !important;
 }
 
 /*
@@ -44,18 +59,19 @@
 */
 .redux-main { height: unset !important; }
 .redux-main .divide .inner { display: none !important; }
+.redux-main .divide {
+	height: unset !important;
+	line-height: unset !important;
+}
 
 /*
 	RPECK 10/08/2023 - Redux Header
 	Styling for the header part of Redux because the default is too big
 */
-.redux-container {
-	border-top-left-radius: 10px;
-	border-top-right-radius: 10px;
-}
 #redux-header {
 	background-color: rgb(0, 0, 0) !important;
 	border-color: red !important;
+    user-select: none;
 }
 #redux-header > .display_header { margin: unset !important; }
 #redux-header > .display_header:before {
@@ -83,8 +99,25 @@
 #redux-header > .display_header > span {
 	opacity: 0.5;
 	transition: opacity 0.15s ease;
-	user-select: none;
 }
 #redux-header > .display_header > span:is(:hover, :focus, :active) {
 	opacity: 0.85;
+}
+
+/* 
+    RPECK 14/08/2023 - Admin Wordpress branding removal
+    This was added to give us the means to remove any of the default WP branding that may pollute the admin area
+*/
+body.wp_removed #wp-admin-bar-wp-logo,
+body.wp_removed #wpadminbar .quicklinks li .blavatar { display: none; }
+
+/* 
+	RPECK 15/08/2023 - Redux Cancel Button
+	Changed colour to ensure it looks okay
+*/
+.redux-main .button.remove-image,
+.redux-main .removeCSS {
+	background-color: red !important;
+	color: white !important;
+	border: 0 !important;
 }

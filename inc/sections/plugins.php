@@ -36,9 +36,10 @@ class Plugins extends Section {
 			'id'      	  => 'plugins',
 			'title'   	  => 'Plugins',
 			'icon'    	  => 'el-icon-plus-sign',
-			'heading' 	  => 'Plugins',
+			'heading' 	  => '<h1>🔌 Plugins</h1>',
 			'permissions' => 'install_plugins',
 			'desc'    	  => '
+				--<br/>
 				<strong>Plugins defined by the theme. Used to populate TGMPA.</strong>
 				<p>Each plugin is defined inside TGMPA to ensure they are installed. No bearing on functionality beyond that.</p>
 			',

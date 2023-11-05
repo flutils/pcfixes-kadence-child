@@ -16,6 +16,8 @@ namespace KadenceChild\Redux;
 // RPECK 27/07/2023 - Libraries
 // Used to provide various imported files / libraries from the global namespace
 use KadenceChild\Redux\Section;
+use KadenceChild\Helpers;
+use Kadence_Blocks_Pro_Dynamic_Content;
 
 // RPECK 05/08/2023 - Constants
 // These are used to define the different constants used by the class
@@ -99,6 +101,99 @@ class Core {
 
 		}
 
+		// RPECK 11/08/2023 - Global shortcode
+		// This is a shortcode which wraps the Redux global var in a shortcode we can access throughout the site
+		add_shortcode(apply_filters('KadenceChild\global_shortcode', 'kadence_child'), array($this, 'global_shortcode'));
+
+		// RPECK 17/08/2023 - Create the "Redux" Dynamic Content option inside Kadence Blocks Pro
+		// This is required to give us the means to manage exactly what content is available in the dynamic thing
+		if(class_exists('Kadence_Blocks_Pro_Dynamic_Content')) {
+			
+			// RPECK 17/08/2023 - Options
+			// Allows us to loop through the different filters we require and ensure they loaded properly
+			// --
+			// Correspond to different filtrs defined in the Kadence Blocks Pro plugin (./wp-content/kadence-blocks-pro/includes/dynamic-content/class-kadence-blocks-pro-dynamic-content.php)
+			$options = array('text', 'link', 'conditional');
+			
+			// RPECK 18/08/2023 - Loop
+			// Loop for the system which allows us to populate the various filters
+			foreach($options as &$option) {
+
+				// RPECK 17/08/2023 - Fields
+				// Based on the above, allows us to get the filter applied without having to redeclare everything
+				add_filter("kadence_block_pro_dynamic_{$option}_fields_options", array($this, 'dynamic_content_options'));
+				
+			}
+			
+		}
+
+	}
+
+	// RPECK 17/08/2023 - Dynamic Content Options
+	// This gives us the ability to hook into the core Kadence Blocks filter, which works to pull in the different "dynamic content" options
+	// --
+	// Use it here and allows us to call the various sections/fields required to populate it
+	public function dynamic_content_options($options) {
+		
+		// RPECK 18/08/2023 - Filter
+		// Defines the $filter variable with a regex match on the filter name
+		preg_match('/kadence_block_pro_dynamic_(.*)_fields_options/', current_filter(), $matches);
+		
+		// RPECK 18/08/2023 - Check if filter exists
+		// If it does, process everything required to make it work
+		if(is_array($matches) && isset($matches[1])) {
+			
+			// RPECK 17/08/2023 - Compile the various option names from our fields
+			// This has to cycle through all of the fields and pull out the ones which have "dynamic_content" populated
+			$property_name = "dynamic_{$matches[1]}";
+			$option_names  = array();
+			$fields        = array_column($this->sections, 'fields');
+
+			// RPECK 17/08/2023 - Loop through the sections/fields and pull out the various items that we need
+			// Would have preferred a fancy way to do this, but the loop gives us robustness
+			foreach(array_merge(...$fields) as &$field) {
+
+				// RPECK 17/08/2023 - Check if dynamic content is false
+				// If it's false, then don't do anything
+				if($field->$property_name != false && !is_null($field->$property_name)) {
+					
+					// RPECK 18/08/2023 - Global Variable
+					// Used to access the redux framework data so we don't need to call the database
+					global $kadence_child_theme;
+					
+					// RPECK 17/08/2023 - Push the field's values
+					// This is required if the field has its value already populated
+					array_push($option_names, array(
+						'value' => "redux_{$matches[1]}|{$field->id}",
+						'label' => esc_attr__(Helpers::removeEmojis($field->title), $this->opt_name)
+						)
+					);
+
+				}
+
+			}
+
+			// RPECK 17/08/2023 - Insert the various Redux options we have defined
+			// This is rudamentary at present but can be fleshed out as required
+			// --
+			// ./wp-content/kadence-blocks-pro/includes/dynamic-content/class-kadence-blocks-pro-dynamic-content.php#1528
+			$redux_options = array(
+				array(
+					'label'   => __('Redux', $this->opt_name),
+					'options' => apply_filters("KadenceChild\kadence_dynamic_{$matches[1]}_field_options", $option_names)
+				)
+			);
+			
+			// RPECK 18/08/2023 - Array Merge
+			// Merges the options with $redux_options to give us the required information
+			$options = array_merge($redux_options, $options);
+			
+		}
+		
+		// RPECK 17/08/2023 - Return the options
+		// Gives us the ability to update the options of the filter
+		return $options;
+
 	}
 
 	// RPECK 16/07/2023 - Get Args
@@ -119,6 +214,35 @@ class Core {
 		// RPECK 28/07/2023 - Get Sections
 		// Passes the $section_id value onto get_option if present
 		return \Redux::get_sections($this->opt_name, $section_id);
+
+	}
+
+	// RPECK 11/08/2023 - Global Shortcode
+	// Allows us to access the Redux global variable data from the templating engine
+	public function global_shortcode($atts, $content = '') {
+
+		// RPECK 11/08/2023 - Shortcode Attributes
+		// Pulls in any attributes we've passed through to the shortcode, allowing us to use them as needed
+		extract(shortcode_atts( array(
+			'field'	=> ''
+		), $atts));
+
+		// RPECK 17/08/2023 - Global Variable Name
+		// Need to extract this functionality out into something more robust
+		$global_variable_name = Helpers::getGlobalVariableName($this->opt_name);
+
+		// RPECK 31/07/2023 - Global Variable
+		// Loads the global variable of Redux, allowing us to gain access to the various values it contains
+		global ${$global_variable_name};
+
+		// RPECK 25/08/2023 - Field
+		// Required as field was being provided with quotes
+		// --
+		// https://stackoverflow.com/a/657670/1143732
+		$field = preg_replace("/&#?[a-z0-9]{2,8};/i","", $field);
+
+		// RPECK 11/08/2023 - Return the values 
+		if(array_key_exists($field, ${$global_variable_name})) return ${$global_variable_name}[$field];
 
 	}
 

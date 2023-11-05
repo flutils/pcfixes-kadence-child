@@ -53,12 +53,11 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 		/**
 		 * Rebuild Settings.
 		 *
-		 * @param array $defaults Defaults array.
 		 * @param array $settings Settings array.
 		 *
 		 * @return array
 		 */
-		private function rebuild_setttings( array $defaults, array $settings ): array {
+		private function rebuild_setttings( array $settings ): array {
 			$fixed_arr = array();
 			$stock     = '';
 
@@ -144,7 +143,7 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 			echo '<div class="redux-social-profiles-selector-container">';
 			echo '<ul id="redux-social-profiles-selector-list">';
 
-			$settings = $this->rebuild_setttings( $this->defaults, $settings );
+			$settings = $this->rebuild_setttings( $settings );
 
 			foreach ( $this->defaults as $key => $social_provider_default ) {
 				$social_provider_option = ( $settings && is_array( $settings ) && array_key_exists( $key, $settings ) ) ? $settings[ $key ] : null;
@@ -280,6 +279,17 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 
 			echo '</ul>';
 			echo '</div>';
+		}
+
+		/**
+		 * This function is unused, but necessary to trigger output.
+		 *
+		 * @param mixed $data CSS data.
+		 *
+		 * @return mixed|string|void
+		 */
+		public function css_style( $data ) {
+			return $data;
 		}
 
 		/**

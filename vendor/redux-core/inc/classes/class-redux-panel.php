@@ -5,6 +5,7 @@
  * @class Redux_Panel
  * @version 3.0.0
  * @package Redux Framework/Classes
+ * @noinspection PhpIgnoredClassAliasDeclaration
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -40,10 +41,10 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 		/**
 		 * Sets the path from the arg or via filter. Also calls the panel template function.
 		 *
-		 * @param object $parent ReduxFramework pointer.
+		 * @param object $redux ReduxFramework pointer.
 		 */
-		public function __construct( $parent ) {
-			$this->parent        = $parent;
+		public function __construct( $redux ) {
+			$this->parent        = $redux;
 			$this->template_path = Redux_Core::$dir . 'templates/panel/';
 			$this->original_path = Redux_Core::$dir . 'templates/panel/';
 
@@ -100,17 +101,6 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 			if ( is_rtl() ) {
 				$this->parent->args['class'] = ' redux-rtl';
 			}
-
-			echo '<div id="redux-dialog-confirm" title="' . esc_html__( 'Submit Support Information?', 'redux-framework' ) . '" data-nonce="' . esc_attr( wp_create_nonce( 'redux_submit_support' ) ) . '">';
-			// translators: %s = WP Site Health Screen URL.
-			echo '<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>' . sprintf( esc_html__( 'Redux will send the debug information found on the %s and your Redux config to our secure server.  Are you ready to proceed?', 'redux-framework' ), '<a href="' . esc_url( admin_url( 'site-health.php?tab=debug' ) ) . '" target="_blank">' . esc_html__( 'WordPress Site Health screen', 'redux-framework' ) . '</a>' ) . '</p>';
-			echo '</div>';
-
-			echo '<div id="redux-dialog-message" title="Working...">';
-			echo '<p class="redux-message-p">';
-			echo '<span class="spinner" style="float:left; margin:0 7px 50px 0;" ></span>Transmitting data...';
-			echo '</p>';
-			echo '</div>';
 
 			$this->get_template( 'container.tpl.php' );
 
@@ -353,13 +343,11 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 					// translators: %1$s: template path.
 					echo '<div class="error"><p>' . sprintf( esc_html__( 'Redux Panel Template %1$s cannot be read. Please check the permissions for this file.', 'redux-framework' ), '<code>' . esc_html( $path ) . '</code>' ) . '</p></div>';
 				}
-			} else {
-				if ( file_exists( Redux_Core::$dir . 'templates/panel/' . $file ) ) {
+			} elseif ( file_exists( Redux_Core::$dir . 'templates/panel/' . $file ) ) {
 					require Redux_Core::$dir . 'templates/panel/' . $file;
-				} else {
-					// translators: %1$s: template path.
-					echo '<div class="error"><p>' . sprintf( esc_html__( 'Redux Panel Template %1$s does not exist. Please reinstall Redux to replace this file.', 'redux-framework' ), '<code>' . esc_html( $path ) . '</code>' ) . '</p></div>';
-				}
+			} else {
+				// translators: %1$s: template path.
+				echo '<div class="error"><p>' . sprintf( esc_html__( 'Redux Panel Template %1$s does not exist. Please reinstall Redux to replace this file.', 'redux-framework' ), '<code>' . esc_html( $path ) . '</code>' ) . '</p></div>';
 			}
 		}
 
@@ -412,7 +400,7 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 					$core_version      = Redux_Helpers::get_template_version( $this->original_path . $file );
 					$developer_version = Redux_Helpers::get_template_version( $developer_theme_file );
 
-					if ( $core_version && $developer_version && version_compare( $developer_version, $core_version, '<' ) /* && isset( $this->parent->args['dev_mode'] ) && ! empty( $this->parent->args['dev_mode'] ) */ ) {
+					if ( $core_version && $developer_version && version_compare( $developer_version, $core_version, '<' ) ) {
 						?>
 						<div id="message" class="error redux-message" style="display:block!important">
 							<p>
@@ -441,5 +429,3 @@ if ( ! class_exists( 'Redux_Panel', false ) ) {
 if ( ! class_exists( 'reduxCorePanel' ) ) {
 	class_alias( 'Redux_Panel', 'reduxCorePanel' );
 }
-
-

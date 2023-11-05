@@ -38,29 +38,27 @@ class Intro extends Section {
 			'id'		=> 'intro',
 			'title' 	=> 'Introduction',
 			'icon'  	=> 'el-icon-info-circle',
-			'heading' 	=> 'Info',
+			'heading' 	=> '<h1>ℹ️ Info</h1>',
 			'priority'	=> 0,
 			'desc'  	=> '
-				<p><strong><u>💥 RPECK 03/08/2023</u> - Information about how the framework works and is built/designed</strong></p>
+				<p><strong>Information about how the framework works and is built/designed</strong></p>
 				<p>Theme was designed to provide a standard set of options/functionality through which to populate Kadence.</p>
 				<p>It works by providing a central options system (built with <a href="https://www.redux.io">Redux Framework</a>) which can be extended and managed as required.</p>
 			',
 
 			'fields' => array(
 
-				// RPECK 06/08/2023 - Intro
-				// Brief explanation on exactly how it works from a top-down level
+				// RPECK 11/08/2023 - Divider
+				// Gives us the means to separate the different elements
 				array(
-					'id' 	   => 'general_overview',
-					'title'    => 'ℹ️ RPECK 06/08/2023 - Hooks',
-					'subtitle' => 'Information regarding how to hook into the system',
-					'type'	   => 'info',
-					'class'	   => 'rpeck-test',
-					'desc'	   => '
-						<p>To make changes to how the system is set up, there are several hooks we have created: -</p>
-						<p></p>
+					'id'	=> 'info_introduction',
+					'type'  => 'info',
+					'title' => '<h1><strong>✅ Overview</strong></h1>',
+					'subtitle'	=> '
+						<strong>Built to provide a framework through which to edit and manipulate the theme in a structured and robust way.</strong>
+						<p>The primary feature of the theme is the integration of Redux to act as an API for our inputs.</p>
 					'
-				)
+				),
 
 			) 
 			

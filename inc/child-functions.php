@@ -46,7 +46,7 @@ function default_sections($sections, $redux) {
 
     // RPECK 08/08/2023 - Default Sections
     // The sections are used to provide the means to populate the sections from defaults
-    $default_sections = array(get_stylesheet_directory(), 'inc', 'defaults', '*');
+    $default_sections = array(get_stylesheet_directory(), 'inc', 'sections', '*');
     
     // RPECK 05/08/2023 - Initialize Classes
     // Loops through the files in the globbed folder, allowing us to invoke the classes as needed
@@ -91,9 +91,9 @@ function default_sections($sections, $redux) {
 // https://developer.wordpress.org/reference/hooks/pre_update_option/
 function pre_update_option($new_value, $option, $old_value) {
 
-  // RPECK 29/07/2023 - Check if the new value is the same as the old
-  // If it is, return the new value, else the old 
-  return $new_value != $old_value ? $new_value : $old_value;
+    // RPECK 29/07/2023 - Check if the new value is the same as the old
+    // If it is, return the new value, else the old 
+    return $new_value != $old_value ? $new_value : $old_value;
 
 }
 
@@ -120,16 +120,6 @@ function change_tgmpa_load_sequence(){
 		add_action('init', array( $tgmpa_theme_class, 'init' ), 100);
 		
 	}
-
-}
-
-// RPECK 04/08/2023 - Remove Code Snippets Notices
-// The notices that the 'code snippets' plugin adds should be removed
-function remove_code_snippets_notices() {
-
-    // RPECK 04/08/2023 - Remove Code Snippets Notices
-    // Gets rid of some of the actions that may be present
-    //remove_action('code_snippets/admin/manage', 'Code_Snippets\Admin\print_notices');
 
 }
 
@@ -171,23 +161,58 @@ function remove_redux_welcome_page() {
 
 }
 
-// RPECK 18/07/2023 - ACF JSON
+// RPECK 18/07/2023 - ACF JSON Load
 // The ACF JSON local directory location (./lib/acf-json)
 // https://www.advancedcustomfields.com/resources/local-json/
 // --
-// This ensures we have a place to allocate 
+// This populates the location of the JSON directory that ACF uses to save and load different field groups
 function acf_json_load_point($paths) {
     
-    // Remove original path (optional)
-    unset($paths[0]);
+    // RPECK 30/10/2023 - Vars
+    // Determines the different vars for the system
+    $current_filter = current_filter();
+    $path           = get_stylesheet_directory() . '/lib/acf-json';
     
-    // Append path
-    $paths[] = get_stylesheet_directory() . '/lib/acf-json';
+    // RPECK 30/10/2023 - Current Filter
+    // Used to determine how we should respond to the request (IE we are using this function for both load and save)
+    // --
+    // Save path expects string return - https://www.advancedcustomfields.com/resources/local-json/#saving-explained
+    if($current_filter == 'acf/settings/save_json') {
+        
+        // Override the variable with our string
+        $paths = $path;
+        
+    // Load path expects array return - https://www.advancedcustomfields.com/resources/local-json/#loading-explained
+    } else {
+    
+        // Remove original path (optional)
+        unset($paths[0]);
+        
+        // Append path
+        $paths[] = $path;
+    
+    }
     
     // Return
     return $paths;
     
 }
+
+// RPECK 21/10/2023 - WooCommerce Template Path Change
+// Used to change the default template path for WooCommerce templates
+add_filter('woocommerce_template_path', function($path){
+    $my_path = get_stylesheet_directory() . '/lib/woocommerce/';
+    return file_exists($my_path) ? '/lib/woocommerce/' : $path;
+});
+
+// RPECK 22/10/2023 - Relevanssi Live Search Template Path
+// Allows us to override the default path for the template that Relevanssi expexects in the ./relevanssi-live-ajax-search folder
+// --
+// Filter used at ./plugins/relevanssi-live-ajax-search/includes/class-relevanssi-live-search-template.php#101
+add_filter('relevanssi_live_search_template_dir', function($path) {
+    $my_path = get_stylesheet_directory() . '/lib/relevanssi-live-ajax-search';
+    return file_exists($my_path) ? '/lib/relevanssi-live-ajax-search' : $path;
+});
 
 //////////////////////////
 //////////////////////////

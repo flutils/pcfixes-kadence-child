@@ -158,9 +158,7 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 			}
 
 			foreach ( self::$profiles[ $opt_name ] as $profile ) {
-				$permissions         = $profile['permissions'] ?? false;
-				$roles               = $profile['roles'] ?? false;
-				$profile['sections'] = self::construct_sections( $opt_name, $profile['id'], $permissions, $roles );
+				$profile['sections'] = self::construct_sections( $opt_name, $profile['id'] );
 				$profiles[]          = $profile;
 			}
 
@@ -174,12 +172,10 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 		 *
 		 * @param string     $opt_name    Panel opt_name.
 		 * @param int|string $profile_id  Profile ID.
-		 * @param bool       $permissions Permissions.
-		 * @param bool       $roles       ROles.
 		 *
 		 * @return array
 		 */
-		public static function construct_sections( string $opt_name, $profile_id, bool $permissions = false, bool $roles = false ): array {
+		public static function construct_sections( string $opt_name, $profile_id ): array {
 			$sections = array();
 
 			if ( ! isset( self::$sections[ $opt_name ] ) ) {
@@ -188,13 +184,12 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 
 			foreach ( self::$sections[ $opt_name ] as $section_id => $section ) {
 				if ( $section['profile_id'] === $profile_id ) {
-
 					self::$sections[ $opt_name ][ $section_id ]['roles'] = $section;
 
 					$p = $section['priority'];
 
 					while ( isset( $sections[ $p ] ) ) {
-						echo esc_html( $p ++ );
+						echo esc_html( $p++ );
 					}
 
 					$section['fields'] = self::construct_fields( $opt_name, $section_id );
@@ -237,7 +232,7 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 					$p = $field['priority'];
 
 					while ( isset( $fields[ $p ] ) ) {
-						echo esc_html( $p ++ );
+						echo esc_html( $p++ );
 					}
 
 					$fields[ $p ] = $field;
@@ -306,6 +301,7 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 					if ( isset( self::$sections[ $opt_name ][ $section['id'] ] ) ) {
 						$orig = $section['id'];
 						$i    = 0;
+
 						while ( isset( self::$sections[ $opt_name ][ $section['id'] ] ) ) {
 							$section['id'] = $orig . '_' . $i;
 						}
@@ -318,12 +314,12 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 
 				if ( isset( $section['fields'] ) ) {
 					if ( ! empty( $section['fields'] ) && is_array( $section['fields'] ) ) {
-
 						if ( isset( $section['permissions'] ) || isset( $section['roles'] ) ) {
 							foreach ( $section['fields'] as $key => $field ) {
 								if ( ! isset( $field['permissions'] ) && isset( $section['permissions'] ) ) {
 									$section['fields'][ $key ]['permissions'] = $section['permissions'];
 								}
+
 								if ( ! isset( $field['roles'] ) && isset( $section['roles'] ) ) {
 									$section['fields'][ $key ]['roles'] = $section['roles'];
 								}
@@ -332,6 +328,7 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 
 						self::process_fields_array( $opt_name, $section['id'], $section['fields'] );
 					}
+
 					unset( $section['fields'] );
 				}
 
@@ -443,6 +440,7 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 					if ( isset( self::$profiles[ $opt_name ][ $profile['id'] ] ) ) {
 						$orig = $profile['id'];
 						$i    = 0;
+
 						while ( isset( self::$profiles[ $opt_name ][ $profile['id'] ] ) ) {
 							$profile['id'] = $orig . '_' . $i;
 						}
@@ -456,6 +454,7 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 								if ( ! isset( $section['permissions'] ) && isset( $profile['permissions'] ) ) {
 									$profile['sections'][ $key ]['permissions'] = $profile['permissions'];
 								}
+
 								if ( ! isset( $section['roles'] ) && isset( $profile['roles'] ) ) {
 									$profile['sections'][ $key ]['roles'] = $profile['roles'];
 								}
@@ -472,55 +471,6 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 			} else {
 				self::$errors[ $opt_name ]['profile']['empty'] = esc_html__( 'Unable to create a profile due an empty profile array or the profile variable passed was not an array.', 'redux-framework' );
 			}
-		}
-
-		/**
-		 * Set Profiles.
-		 *
-		 * @param string $opt_name Panel opt_name.
-		 * @param array  $profiles Profiles array.
-		 */
-		public static function set_profiles( string $opt_name = '', array $profiles = array() ) {
-			if ( ! empty( $profiles ) && is_array( $profiles ) ) {
-				foreach ( $profiles as $profile ) {
-					self::set_profile( $opt_name, $profile );
-				}
-			}
-		}
-
-		/**
-		 * Get profiles.
-		 *
-		 * @param string $opt_name Panel opt_name.
-		 *
-		 * @return mixed
-		 */
-		public static function get_profiles( string $opt_name = '' ) {
-			self::check_opt_name( $opt_name );
-
-			if ( ! empty( $opt_name ) && ! empty( self::$profiles[ $opt_name ] ) ) {
-				return self::$profiles[ $opt_name ];
-			}
-
-			return false;
-		}
-
-		/**
-		 * Get Box.
-		 *
-		 * @param string $opt_name Panel opt_name.
-		 * @param string $key      Key.
-		 *
-		 * @return mixed
-		 */
-		public static function get_box( string $opt_name = '', string $key = '' ) {
-			self::check_opt_name( $opt_name );
-
-			if ( ! empty( $opt_name ) && ! empty( $key ) && ! empty( self::$profiles[ $opt_name ] ) && isset( self::$profiles[ $opt_name ][ $key ] ) ) {
-				return self::$profiles[ $opt_name ][ $key ];
-			}
-
-			return false;
 		}
 
 		/**
@@ -580,43 +530,6 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 		}
 
 		/**
-		 * Get field defaults.
-		 *
-		 * @param string $opt_name Panel opt_name.
-		 *
-		 * @return array|void
-		 */
-		public static function get_field_defaults( string $opt_name ) {
-			if ( empty( $opt_name ) ) {
-				return;
-			}
-
-			if ( ! isset( self::$fields[ $opt_name ] ) ) {
-				return array();
-			}
-
-			$defaults = array();
-			foreach ( self::$fields[ $opt_name ] as $key => $field ) {
-				$defaults[ $key ] = $field['default'] ?? '';
-			}
-
-			return $defaults;
-		}
-
-		/**
-		 * Get user role.
-		 *
-		 * @param int $user_id User ID.
-		 *
-		 * @return false|string
-		 */
-		public static function get_user_role( int $user_id = 0 ) {
-			$user = ( $user_id ) ? get_userdata( $user_id ) : wp_get_current_user();
-
-			return current( $user->roles );
-		}
-
-		/**
 		 * Get USer Meta.
 		 *
 		 * @param array $args Args array.
@@ -641,8 +554,6 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 
 			$single = ! empty( $key );
 
-			/** @var int $user User. */
-			/** @var string $key Key. */
 			$meta = get_user_meta( $user, $key, $single );
 
 			if ( $single ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
@@ -655,12 +566,6 @@ if ( ! class_exists( 'Redux_Users' ) ) {
 
 					$meta[ $key ] = maybe_unserialize( $value );
 				}
-			}
-
-			if ( ! empty( $opt_name ) ) {
-				//$defaults = self::get_field_defaults( $opt_name );
-
-				//$meta = wp_parse_args( $meta, $defaults );
 			}
 
 			return $meta;

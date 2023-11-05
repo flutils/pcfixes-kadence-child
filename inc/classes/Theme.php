@@ -13,9 +13,10 @@
 // This was taken from the primary Kadence system - no need to change it
 namespace KadenceChild;
 
-// RPECK 09/08/2023 - Libraries & Functions
+// RPECK 09/08/2023 - Functions
 // Used to provide us with the ability to manage the different libraries we want to call
-use function post_type_exists;
+use function is_admin;
+use function is_customize_preview;
 
 // RPECK 16/07/2023 - No direct access
 // Maintain the security of the system by blocking anyone who tries to access the file directly
@@ -41,14 +42,6 @@ final class Theme {
 	// RPECK 18/07/2023 - Config Options
 	// This is used to give us the means to populate a set of configuration options for the class
 	public $config = array();
-
-	// RPECK 02/08/2023 - Post Types
-	// This was added to give us the means to allocate different PostType objects to the class
-	public $post_types = array();
-
-	// RPECK 04/08/2023 - Shortcodes
-	// Allows us to add various shortcodes to the system
-	public $shortcodes;
 
 	// RPECK 14/07/2023
 	// Taken from the main Kadence theme
@@ -120,6 +113,10 @@ final class Theme {
 		// This is required for a number of JS/CSS files that are included with the theme as a means to improve performance etc
 		add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
 
+		// RPECK 14/08/2023 - Enqueue Styles
+		// Required for front-end scripts/styles
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+
 	}
 
 	// RPECK 28/07/2023 - Enqueue Admin Scripts
@@ -129,6 +126,20 @@ final class Theme {
 		// RPECK 28/07/2023 - Stylesheets
 		// Various stylesheets required to help us improve different aspects of the admin area
 		wp_enqueue_style('kadence_child_admin_styles', get_stylesheet_directory_uri().'/assets/admin/css/main.css');
+
+	}
+
+	// RPECK 14/08/2023 - Enqueue Scripts
+	// This gives us an extensible place from which to enqueue the various stylesheets / Javascript files required to run in the admin area
+	public function enqueue_scripts(){
+
+		// RPECK 28/07/2023 - Stylesheets
+		// Various stylesheets required to help us improve different aspects of the admin area
+		wp_enqueue_style('kadence_child_styles', get_stylesheet_directory_uri().'/assets/main/css/main.css');
+
+		// RPECK 28/07/2023 - Scripts
+		// Extra javascript added to the front-end to facilitate various functionality
+		wp_enqueue_script('kadence_child_scripts', get_stylesheet_directory_uri().'/assets/main/js/main.js');
 
 	}
 
@@ -147,80 +158,6 @@ final class Theme {
 		// RPECK 31/07/2023 - TGMPA
 		// Triggers the 'initialize' hook on our TGMPA Core class after the redux_loaded hook has had a chance to work
 		if($this->tgmpa instanceof \KadenceChild\Tgmpa\Core) add_action('tgmpa_register', array($this->tgmpa, 'initialize'));
-
-		// RPECK 09/08/2023 - Post Types
-		// Used to give us the means to manage which post types the system will handle
-		// --
-		// It may be worth splitting this functionality into a more structured one, but it should be okay for now
-		// Requires a priority of 11 or more to make it compatible with Redux
-		if(class_exists('\KadenceChild\PostType')) add_action('init', array($this, 'register_post_types'), 11);
-
-	}
-
-	// RPECK 09/08/2023 - Post Types
-	// Sets up the various post types (needs to have a priority of 11+ on WP init action so that Redux can finish loading)
-	public function register_post_types() {
-
-		// RPECK 09/08/2023 - Post Types Array
-		// An array of the post types defined in the system (inside the post_types.php default loader)
-		$this->post_types = apply_filters('KadenceChild\post_types', $this->post_types);
-
-		// RPECK 09/08/2023 - Take the above array and turn it into an array of PostType classes, which can then be initialized (IE registered)
-		// This will set up the various CPT's for use inside our engine
-		if(is_array($this->post_types) && count($this->post_types) > 0) {
-
-			// RPECK 09/08/2023 - Vars
-			// Various values used within the system
-			$colours = array();
-
-			// RPECK 09/08/2023 - Post Types
-			// Goes through the predefined posts and allows us to register them as needed
-			array_walk($this->post_types, function(&$post_type){
-
-				// RPECK 09/08/2023 - Check to see if the post type is an array or instance of PostType
-				// If it is an instance, don't do anything
-				if(!($post_type instanceof \KadenceChild\PostType)) $post_type = new PostType($post_type);
-
-				// RPECK 09/08/2023 - Initialize 
-				// Every post type needs to be initialized if the type has not been registered previously
-				if(property_exists($post_type, 'slug') && !post_type_exists($post_type->slug)) $post_type->initialize();
-
-			});
-
-			// RPECK 09/08/2023 - Menu Colours
-			// This gives us the ability to change the different colours for the admin menu items assigned to a CPT
-			add_action('admin_enqueue_scripts', function() {
-
-				// RPECK 09/08/2023 - Output the value for the menu
-				// This starts it all
-				$menu = '<style type="text/css">';
-
-				// RPECK 09/08/2023 - Loop
-				foreach($this->post_types as &$post_type) {
-					if(!empty($post_type->colour)) {
-						$menu .= '
-							li.menu-top#menu-posts-' . $post_type->slug . ' {
-								--background-color: ' . $post_type->colour . ';
-							}
-							li.menu-top#menu-posts-' . $post_type->slug . ' > .wp-submenu {
-								--background-color: ' . $post_type->submenu_colour . ';
-							}
-							#adminmenu li.menu-top#menu-posts-' . $post_type->slug . '.wp-has-submenu.wp-not-current-submenu:after {
-								--background-color: ' . $post_type->submenu_colour . ';
-							}
-						';
-					}
-				}
-
-				$menu .= '</style>';
-
-				// RPECK 09/08/2023 - Output menu colours
-				// Ensures we can send all of the data in a single call
-				echo $menu;
-
-			});
-
-		}		
 
 	}
 

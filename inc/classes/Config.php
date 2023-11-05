@@ -37,17 +37,17 @@ class Config {
 	////////////
 	// Redux
 
-  // RPECK 25/07/2023 - Display Name
-  // The text at the top of the Redux Framework page (defaults to $theme->get('Name'))
-  // --
-  // https://devs.redux.io/configuration/global_arguments.html#display-name
-  public $redux_display_name = 'Kadence Child Theme';
+	// RPECK 25/07/2023 - Display Name
+	// The text at the top of the Redux Framework page (defaults to $theme->get('Name'))
+	// --
+	// https://devs.redux.io/configuration/global_arguments.html#display-name
+	public $redux_display_name = 'Kadence Child Theme';
 
-  // RPECK 25/07/2023 - Display Version
-  // Version number of the theme as defined by the system (defaults to $theme->get('Version'))
-  // --
-  // https://devs.redux.io/configuration/global_arguments.html#display-version
-  public $redux_display_version = null;
+	// RPECK 25/07/2023 - Display Version
+	// Version number of the theme as defined by the system (defaults to $theme->get('Version'))
+	// --
+	// https://devs.redux.io/configuration/global_arguments.html#display-version
+	public $redux_display_version = null;
 
 	// RPECK 20/07/2023 - Admin Menu Label
 	// Defines the menu label for Redux
@@ -56,6 +56,10 @@ class Config {
 	// RPECK 20/07/2023 - Admin Page Title
 	// Defines the menu label for Redux
 	public $redux_page_title = 'Child Theme';
+
+	// RPECK 13/08/2023 - Ajax Save
+	// This was added to give us the means to stop the ajax update of fields (I originally wanted to refresh when certain fields were saved but ended up going against it)
+	public $redux_ajax_save = false;
 
 	// RPECK 20/07/2023 - Page Slug
 	// Default value for page slug
@@ -189,9 +193,13 @@ class Config {
 		// Only proceed if the key is valid and populated
 		if(!is_null($key) && !empty($key)) {
 
+            // RPECK 16/08/2023 - Object Vars (https://www.php.net/manual/en/function.get-object-vars.php)
+            // Provides access to the publicly accessible properties of the instantiated object
+            $object_vars = get_object_vars($this);
+
 			// RPECK 20/07/2023 - Loop through instance properties of class
 			// This gives us the means to identify which properties are in the class and then return 
-			array_walk(get_object_vars($this), function($object_value, $object_key) use ($key, &$data) {
+			foreach($object_vars as $object_key => $object_value) {
 
 				// RPECK 20/07/2023 - Key starts with 
 				// If object_key starts with $key then add it to data
@@ -228,7 +236,7 @@ class Config {
 
 				}
 
-			});
+			}
 
 		}
 

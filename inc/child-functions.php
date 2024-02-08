@@ -44,13 +44,28 @@ function init() {
 // Extracted from the core Theme class files into a separate set of child functions (to keep the core theme code lean)
 function default_sections($sections, $redux) {
 
-    // RPECK 08/08/2023 - Default Sections
-    // The sections are used to provide the means to populate the sections from defaults
-    $default_sections = array(get_stylesheet_directory(), 'inc', 'sections', '*');
+    // RPECK 08/02/2024 - Added ability to the ./lib/redux/sections directory 
+    // Required to give us the means to access the various sections defined in a set of files in the lib directory
+    $default_sections = [
+        array(get_stylesheet_directory(), 'inc', 'sections', '*.php'),
+        array(get_stylesheet_directory(), 'lib', 'redux', 'sections', '*.php')
+    ];
+    
+    // RPECK 08/02/2024 - Implode each of the array elements
+    // Gives us the means to perform an action on each of the array elements (namely to implode them)
+    array_walk($default_sections, function(&$value){
+        
+        // RPECK 08/02/2024 - Implode the path
+        // This could probably be done above but for the sake of ensuring things are done properly, doing it here
+        if(is_array($value)) $value = implode(DIRECTORY_SEPARATOR, $value);
+        
+    });
     
     // RPECK 05/08/2023 - Initialize Classes
     // Loops through the files in the globbed folder, allowing us to invoke the classes as needed
-    foreach(glob(implode(DIRECTORY_SEPARATOR, $default_sections)) as &$file) {
+    // --
+    // Ref: https://stackoverflow.com/a/10664000/1143732
+    foreach(glob('{' . implode(',', $default_sections) . '}', GLOB_BRACE) as &$file) {
 
         // RPECK 08/08/2023 - Require files
         // This should really go in the autoloader but because we've changed the file structure, we can put it here

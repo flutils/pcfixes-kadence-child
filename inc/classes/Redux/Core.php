@@ -33,7 +33,7 @@ class Core {
 
 	// RPECK 16/07/2023 - Opt Name
 	// This is used to define the namespace of the values (defaults to KADENCE_CHILD_TEXT_DOMAIN)
-	public $opt_name = KADENCE_CHILD_TEXT_DOMAIN;
+	public static $opt_name = KADENCE_CHILD_TEXT_DOMAIN;
 
 	// RPECK 16/07/2023 - Args
 	// Used to populate the various arguments for Redux
@@ -165,7 +165,7 @@ class Core {
 					// This is required if the field has its value already populated
 					array_push($option_names, array(
 						'value' => "redux_{$matches[1]}|{$field->id}",
-						'label' => esc_attr__(Helpers::removeEmojis($field->title), $this->opt_name)
+						'label' => esc_attr__(Helpers::removeEmojis($field->title), $this::$opt_name)
 						)
 					);
 
@@ -179,7 +179,7 @@ class Core {
 			// ./wp-content/kadence-blocks-pro/includes/dynamic-content/class-kadence-blocks-pro-dynamic-content.php#1528
 			$redux_options = array(
 				array(
-					'label'   => __('Redux', $this->opt_name),
+					'label'   => __('Redux', $this::$opt_name),
 					'options' => apply_filters("KadenceChild\kadence_dynamic_{$matches[1]}_field_options", $option_names)
 				)
 			);

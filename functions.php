@@ -10,6 +10,12 @@ namespace KadenceChild;
 // Required files to ensure we are able to run the various pieces of functionality
 foreach(glob(get_stylesheet_directory() . "/inc/*.php") as &$file) { require_once($file); }
 
+// RPECK 09/02/2024 - Extra functions
+// Used to give us the ability to interface with the system via a file
+// --
+// Primary reason for this was adding functionality which interfaced with Redux was not possible via snippets
+if( file_exists(get_stylesheet_directory() . "/lib/functions.php") ) require_once(get_stylesheet_directory() . "/lib/functions.php"); 
+
 // RPECK 13/07/2023 - Actions
 // These are used to integrate with global hooks inside the system
 // I would have preferred to have these loaded via the call_user_func file, but they would need to integrate into the hooks instead

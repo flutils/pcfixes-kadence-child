@@ -85,7 +85,7 @@ function default_sections($sections, $redux) {
 
         // RPECK 05/08/2023 - New Class
         // Sets up the class using the values inside it to get defaults
-        $klass = new $class($redux->opt_name);
+        $klass = new $class($redux::$opt_name);
 
         // RPECK 05/08/2023 - Add the new element to the start of the sections array
         // Gives us the ability to manage the system properly

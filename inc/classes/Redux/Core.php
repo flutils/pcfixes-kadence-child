@@ -65,7 +65,7 @@ class Core {
 
 				// RPECK 25/07/2023 - Define section
 				// Take the values attributed to our $section variables and make them work with the classes
-				return ($section instanceof Section) ? $section : new Section($this->opt_name, $section);
+				return ($section instanceof Section) ? $section : new Section($this::$opt_name, $section);
 
 			}, $sections);
 
@@ -83,7 +83,7 @@ class Core {
 		
 		// RPECK 16/07/2023 - Set args
 		// Set the above arguments as the default for the system
-		\Redux::set_args($this->opt_name, $this->args);
+		\Redux::set_args($this::$opt_name, $this->args);
 
 		// RPECK 24/07/2023 - Sections
 		// Gives us the ability to set the various sections for the theme
@@ -203,7 +203,7 @@ class Core {
 
 		// RPECK 16/07/2023 - Check if arg is present
 		// If $arg is present, use get_arg else use get_args
-		return \Redux::get_option($this->opt_name, $arg);
+		return \Redux::get_option($this::$opt_name, $arg);
 
 	}
 
@@ -213,7 +213,7 @@ class Core {
 
 		// RPECK 28/07/2023 - Get Sections
 		// Passes the $section_id value onto get_option if present
-		return \Redux::get_sections($this->opt_name, $section_id);
+		return \Redux::get_sections($this::$opt_name, $section_id);
 
 	}
 
@@ -229,7 +229,7 @@ class Core {
 
 		// RPECK 17/08/2023 - Global Variable Name
 		// Need to extract this functionality out into something more robust
-		$global_variable_name = Helpers::getGlobalVariableName($this->opt_name);
+		$global_variable_name = Helpers::getGlobalVariableName($this::$opt_name);
 
 		// RPECK 31/07/2023 - Global Variable
 		// Loads the global variable of Redux, allowing us to gain access to the various values it contains

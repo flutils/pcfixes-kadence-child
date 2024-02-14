@@ -113,7 +113,7 @@ class Core {
 			// Allows us to loop through the different filters we require and ensure they loaded properly
 			// --
 			// Correspond to different filtrs defined in the Kadence Blocks Pro plugin (./wp-content/kadence-blocks-pro/includes/dynamic-content/class-kadence-blocks-pro-dynamic-content.php)
-			$options = array('text', 'link', 'conditional');
+			$options = array('text', 'link', 'conditional', 'gallery');
 			
 			// RPECK 18/08/2023 - Loop
 			// Loop for the system which allows us to populate the various filters

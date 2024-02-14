@@ -384,7 +384,20 @@ class Field {
 		// --
 		// https://stackoverflow.com/a/1499867/1143732
 		// https://stackoverflow.com/a/12196632/1143732
-		if(property_exists($this, $callback) && !is_null($this->$callback)) call_user_func($this->$callback, $value, $opt_name);
+		if(property_exists($this, $callback) && !is_null($this->$callback)) {
+		    
+		    // RPECK 14/02/2024 - Before action
+		    // Allows us to trigger actions that fire before the callback
+		    do_action("{$this->id}_before_{$action}", $this, $this->$callback, $value);
+		    
+		    // RPECK 14/02/2024 - Run the callback
+		    call_user_func($this->$callback, $value, $opt_name);
+		    
+		    // RPECK 14/02/2024 - Before action
+		    // Allows us to trigger actions that fire before the callback
+		    do_action("{$this->id}_after_{$action}", $this, $this->$callback, $value);
+		    
+		}
 
 	}
 

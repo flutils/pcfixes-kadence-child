@@ -175,6 +175,18 @@ class Branding extends Section {
                                                 background-position: center center;
                                                 padding-bottom: 30px;
                                             }
+                                            #loginform  { border-radius: 5px; }
+                                            #backtoblog { display: none; }
+                                            #nav {
+                                            	display: flex;
+                                            	justify-content: center; 
+                                            	align-items: center; 
+                                            	column-gap: 0.5em;
+                                            }
+                                            .privacy-policy-page-link {
+                                                margin-top: 1em !important;
+                                                margin-bottom: 1em !important;
+                                            }
                                         </style>
                                     ';
 

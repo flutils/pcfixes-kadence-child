@@ -188,6 +188,10 @@ class Field {
 	// Used to provide the means to allocate different conditional items in dynamic blocks
 	public $dynamic_conditional = false;
 
+	// RPECK 14/02/2024 - Dynamic Gallery
+	// Provides the ability to provide dynamic content to a gallery block
+	public $dynamic_gallery = false;
+
 	// RPECK 22/08/2023 - Multi
 	// Used in the select field to provide the means to allocate multiple items per field 
 	public $multi = false;

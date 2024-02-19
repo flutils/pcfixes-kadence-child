@@ -377,7 +377,7 @@ class Field {
 
 	// RPECK 06/08/2023 - Actions
 	// This used to be a single callback, but I found the "save" hook was generic (IE passed through values, not just changed)
-	public function trigger($action, $value, $opt_name) {
+	public function trigger($action, $value, $opt_name, $field = null) {
 
 		// RPECK 07/08/2023 - Get the $action value
 		// Because we're passing 'load' or 'save' as the action, we need to create a variable with the actual callback name
@@ -395,7 +395,7 @@ class Field {
 		    do_action("{$this->id}_before_{$action}", $this, $this->$callback, $value);
 		    
 		    // RPECK 14/02/2024 - Run the callback
-		    call_user_func($this->$callback, $value, $opt_name);
+		    call_user_func($this->$callback, $value, $opt_name, $field);
 		    
 		    // RPECK 14/02/2024 - Before action
 		    // Allows us to trigger actions that fire before the callback

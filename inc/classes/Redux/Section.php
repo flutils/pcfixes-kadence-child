@@ -243,7 +243,7 @@ class Section {
 
 			// RPECK 06/08/2023 - Field run save callback whilst passing the option value
 			// This slims down the functionality massively
-			if(array_key_exists($field->id, ${$global_variable_name}) && !is_null(${$global_variable_name}[ $field->id ])) $field->trigger('load', ${$global_variable_name}[ $field->id ], $this->opt_name, $field);
+			if(array_key_exists($field->id, ${$global_variable_name})) $field->trigger('load', ${$global_variable_name}[ $field->id ], $this->opt_name, $field);
 
 		}
 		

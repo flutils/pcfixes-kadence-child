@@ -37,7 +37,8 @@ class Plugins extends Section {
 			'title'   	  => 'Plugins',
 			'icon'    	  => 'el-icon-plus-sign',
 			'heading' 	  => '<h1>🔌 Plugins</h1>',
-			'permissions' => 'install_plugins',
+			'permissions'     => 'install_plugins',
+			'priority'        => 20,
 			'desc'    	  => '
 				--<br/>
 				<strong>Plugins defined by the theme. Used to populate TGMPA.</strong>

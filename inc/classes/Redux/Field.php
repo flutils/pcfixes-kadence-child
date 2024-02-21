@@ -204,6 +204,14 @@ class Field {
     // Used in the slides field
     public $show;
 
+    // RPECK 21/02/2024 - Min
+    // Used by the slider field
+    public $min;
+    
+    // RPECK 21/02/2024 - Max
+    // Used by the slider field
+    public $max;
+
 	// RPECK 24/07/2023 - Constructor
 	// Accepts arguments used to populate the section
 	function __construct($values = array()) {

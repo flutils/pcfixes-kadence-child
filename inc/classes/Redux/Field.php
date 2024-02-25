@@ -212,6 +212,14 @@ class Field {
     // Used by the slider field
     public $max;
 
+    // RPECK 25/02/2024 - Step
+    // Used by the slider field
+    public $step;
+    
+    // RPECK 25/02/2024 - Label
+    // Used in the slider field
+    public $display_value;
+
 	// RPECK 24/07/2023 - Constructor
 	// Accepts arguments used to populate the section
 	function __construct($values = array()) {

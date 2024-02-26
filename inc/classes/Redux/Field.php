@@ -220,6 +220,10 @@ class Field {
     // Used in the slider field
     public $display_value;
 
+    // RPECK 26/02/2024 - Bind Title
+    // Used by the repeater field
+    public $bind_title;
+
 	// RPECK 24/07/2023 - Constructor
 	// Accepts arguments used to populate the section
 	function __construct($values = array()) {
